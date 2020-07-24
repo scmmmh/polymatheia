@@ -1,1 +1,1 @@
-# Polymatheia - A python library for using digital archive metadata
+# Polymatheia - A python library to support digital archive metadata use
