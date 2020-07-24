@@ -32,7 +32,11 @@ jobs:
         sudo apt-get install python3-venv pipx
         pipx install poetry
     
+    - name: Install Python Dependencies
+      run: |
+        poetry config virtualenvs.in-project true
+        poetry install
+
     - name: Run flake8
       run: |
         flake8 src
-        
