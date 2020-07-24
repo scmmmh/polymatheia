@@ -1,0 +1,5 @@
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 'HEAD'
+    hooks:
+    -   id: flake8
+        additional_dependencies: [flake8-print, flake8-docstrings]

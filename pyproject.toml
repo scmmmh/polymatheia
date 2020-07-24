@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "polymatheia"
+version = "0.1.0"
+description = "A python library to support digital archive metadata use"
+authors = ["Mark Hall <mark.hall@work.room3b.eu>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.3"
+flake8-print = "^3.1.4"
+pre-commit = "^2.6.0"
+pytest = "^5.4.3"
+pytest-cov = "^2.10.0"
+flake8-docstrings = "^1.5.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
