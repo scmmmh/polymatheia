@@ -26,6 +26,7 @@ jobs:
         
     - name: Install Base Dependencies
       run: |
+        pip3 install tox
         curl https://pyenv.run | bash
     
     - name: Install Python Version
@@ -41,4 +42,4 @@ jobs:
     
     - name: Run tox
       run: |
-        poetry run tox -e ${{matrix.python-version}}
+        tox -e ${{matrix.python-version}}
