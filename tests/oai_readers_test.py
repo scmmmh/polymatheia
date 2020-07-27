@@ -6,8 +6,8 @@ def test_list_sets():
     """Test that OAI set listing works."""
     reader = OAISetReader('https://digital.iai.spk-berlin.de/viewer/oai')
     for item in reader:
-        assert item.set_spec
-        assert item.set_name
+        assert item.setSpec
+        assert item.setName
 
 
 def test_list_records_oai_dc():

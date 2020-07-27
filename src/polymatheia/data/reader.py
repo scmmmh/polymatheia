@@ -32,7 +32,7 @@ class OAISetReader(object):
         :raises StopIteration: If no more Sets are available
         """
         oai_set = next(self._it)
-        return NavigableDict({'set_spec': oai_set.setSpec, 'set_name': oai_set.setName})
+        return NavigableDict({'setSpec': oai_set.setSpec, 'setName': oai_set.setName})
 
 
 class OAIRecordReader(object):
