@@ -22,6 +22,7 @@ jobs:
 
     - name: Add .local path
       run: |
+        echo "::add-path::$HOME/.local/bin"
         echo "::add-path::$HOME/.pyenv/bin"
         
     - name: Install Base Dependencies
