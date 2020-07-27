@@ -29,6 +29,7 @@ jobs:
       run: |
         pip3 install tox
         curl https://pyenv.run | bash
+        echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
     
     - name: Install Python Version
       run: |
