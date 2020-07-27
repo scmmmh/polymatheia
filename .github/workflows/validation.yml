@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Add .local path
+    - name: Add Local Path
       run: |
         echo "::add-path::$HOME/.local/bin"
         
