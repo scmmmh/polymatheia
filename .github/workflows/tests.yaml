@@ -20,7 +20,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Add .local path
+    - name: Add Path Entries
       run: |
         echo "::add-path::$HOME/.local/bin"
         echo "::add-path::$HOME/.pyenv/bin"
@@ -46,6 +46,7 @@ jobs:
         fi
         pyenv versions
     
-    - name: Run tox
+    - name: Run Tests
       run: |
+        exec "$SHELL"
         tox -e ${{matrix.python-version}}
