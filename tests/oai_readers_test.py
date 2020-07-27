@@ -1,5 +1,18 @@
-"""Tests for :class:`~polymatheia.data.reader.OAISetReader."""
-from polymatheia.data.reader import OAISetReader, OAIRecordReader
+"""Tests for various OAI readers."""
+from polymatheia.data.reader import OAIMetadataReader, OAISetReader, OAIRecordReader
+
+
+def test_list_metadata():
+    """Test that OAI metadata format listing works."""
+    reader = OAIMetadataReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    oai_dc_found = False
+    for item in reader:
+        assert item.schema
+        assert item.metadataPrefix
+        assert item.metadataNamespace
+        if item.metadataPrefix == 'oai_dc':
+            oai_dc_found = True
+    assert oai_dc_found is True
 
 
 def test_list_sets():
