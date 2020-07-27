@@ -1,4 +1,5 @@
 """Utility classes and functions."""
+import re
 
 
 class NavigableDict(dict):
@@ -56,3 +57,54 @@ class NavigableDict(dict):
         """
         for key, value in dict(*args, **kwargs).items():
             setattr(self, key, value)
+
+
+def namespace_mapping(identifier, namespaces):
+    """Get the namespace-mapped version of the ``identifier``.
+
+    If the ``identifier`` has a namespace, then this is looked up in the ``namespaces`` dictionary. If the namespace
+    is found, then it returns text in the format ``ns_localName``.
+
+    :param identifier: The identifier to map
+    :type identifier: ``string``
+    :param namespaces: Namespaces to use for mapping
+    :type namespaces: ``dict``
+    """
+    if namespaces:
+        match = re.fullmatch(r'(?:\{([^}]+)\})?(.+)', identifier)
+        if match:
+            if match.group(1) in namespaces:
+                if namespaces[match.group(1)]:
+                    return f'{namespaces[match.group(1)]}_{match.group(2)}'
+                else:
+                    return match.group(2)
+    return identifier
+
+
+def xml_to_navigable_dict(node):
+    r"""Convert the XML node to a dictionary.
+
+    Child ``node``\ s are returned as keys of the dictionary. Where a ``node`` occurs multiple times, the key returns
+    a list of dictionaries for the children. This means that the ordering information in the original XML document is
+    **lost**. All attributes are available via the ``_attrib`` key. The ``node``\ 's text is available via the
+    ``_text`` key and any text that directly follows the ``node`` is available via the ``_tail`` key.
+
+    :param node: The XML node to convert
+    :type node: ``~lxml.etree.Element`
+    :return: The dictionary representation of the XML node
+    :rtype: :class:`~polymatheia.util.NavigableDict`
+    """
+    namespaces = dict([(v, k) for k, v in node.nsmap.items()])
+    tmp = {'_text': node.text,
+           '_tail': node.tail,
+           '_attrib': {}}
+    for key, value in node.attrib.items():
+        tmp['_attrib'][namespace_mapping(key, namespaces)] = value
+    for child in node:
+        if namespace_mapping(child.tag, namespaces) in tmp:
+            if not isinstance(tmp[namespace_mapping(child.tag, namespaces)], list):
+                tmp[namespace_mapping(child.tag, namespaces)] = [tmp[namespace_mapping(child.tag, namespaces)]]
+            tmp[namespace_mapping(child.tag, namespaces)].append(xml_to_navigable_dict(child))
+        else:
+            tmp[namespace_mapping(child.tag, namespaces)] = xml_to_navigable_dict(child)
+    return NavigableDict(tmp)
