@@ -28,6 +28,6 @@ jobs:
         poetry config virtualenvs.in-project true
         poetry install
 
-    - name: Run flake8
+    - name: Run Validation
       run: |
         poetry run flake8 src
