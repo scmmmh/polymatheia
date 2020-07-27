@@ -29,8 +29,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install python3-venv pipx
         pipx install poetry
+        curl https://pyenv.run | bash
     
-    - name: Install Python Dependencies
+    - name: Install Python Version
+      run: |
+        if [ "${{matrix.python-version}}" == "py37" ]
+        then
+            pyenv install 3.7.8
+        fi
+        if [ "${{matrix.python-version}}" == "py38" ]
+        then
+            pyenv install 3.8.5
+        fi
+    
+    - name: Install Project Python Dependencies
       run: |
         poetry config virtualenvs.in-project true
         poetry install
