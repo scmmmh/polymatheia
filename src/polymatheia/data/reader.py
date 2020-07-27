@@ -70,15 +70,18 @@ class OAIRecordReader(object):
     The underlying library automatically handles the continuation parameters, allowing for simple iteration.
     """
 
-    def __init__(self, url, metadataPrefix='oai_dc'):
+    def __init__(self, url, metadata_prefix='oai_dc', max_records=None):
         """Construct a new :class:`~polymatheia.data.reader.OAIRecordReader`.
 
         :param url: The base URL of the OAI-PMH server
         :type url: ``string``
         :param metadataPrefix: The metadata prefix to use for accessing data
         :type metadataPrefix: ``string``
+        :param max_records: The maximum number of records to return. Default (``None``) returns all records
+        :type max_records: ``int``
         """
-        self._it = Sickle(url).ListRecords(metadataPrefix=metadataPrefix, ignore_deleted=True)
+        self._it = Sickle(url).ListRecords(metadataPrefix=metadata_prefix, ignore_deleted=True)
+        self._max_records = max_records
 
     def __iter__(self):
         """Return this :class:`~polymatheia.data.reader.OAIRecordReader` as the iterator."""
@@ -89,5 +92,9 @@ class OAIRecordReader(object):
 
         :raises StopIteration: If no more Records are available
         """
+        if self._max_records is not None:
+            self._max_records = self._max_records - 1
+            if self._max_records < 0:
+                raise StopIteration()
         oai_record = next(self._it)
         return xml_to_navigable_dict(etree.fromstring(oai_record.raw))
