@@ -1,4 +1,5 @@
 """Tests for the :class:`~polymatheia.util.NavigableDict`."""
+import json
 import pytest
 
 from polymatheia.util import NavigableDict
@@ -62,3 +63,9 @@ def test_delete_value():
     del tmp.a
     with pytest.raises(KeyError):
         tmp.a
+
+
+def test_json_str():
+    """Test that the str representation is a JSON serialisation."""
+    tmp = NavigableDict({'a': {'one': 1}, 'b': 2})
+    assert json.loads(str(tmp)) == tmp

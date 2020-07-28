@@ -1,4 +1,5 @@
 """Utility classes and functions."""
+import json
 import re
 
 
@@ -49,6 +50,10 @@ class NavigableDict(dict):
         :raises KeyError: If no value exists for ``key``
         """
         del self[key]
+
+    def __str__(self):
+        """Return a pretty-printed JSON representation."""
+        return json.dumps(self, indent=2)
 
     def update(self, *args, **kwargs):
         """Update the content of this :class:`~polymatheia.util.NavigableDict`.
