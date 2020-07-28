@@ -21,7 +21,7 @@ class OAIMetadataReader(object):
         """Construct a new class:`~polymatheia.data.reader.OAIMetadataReader`.
 
         :param url: The base URL of the OAI-PMH server
-        :type url: ``string``
+        :type url: ``str``
         """
         self._it = Sickle(url).ListMetadataFormats()
 
@@ -50,7 +50,7 @@ class OAISetReader(object):
         """Construct a new class:`~polymatheia.data.reader.OAISetReader`.
 
         :param url: The base URL of the OAI-PMH server
-        :type url: ``string``
+        :type url: ``str``
         """
         self._it = Sickle(url).ListSets()
 
@@ -73,17 +73,21 @@ class OAIRecordReader(object):
     The underlying library automatically handles the continuation parameters, allowing for simple iteration.
     """
 
-    def __init__(self, url, metadata_prefix='oai_dc', max_records=None):
+    def __init__(self, url, metadata_prefix='oai_dc', max_records=None, set_spec=None):
         """Construct a new :class:`~polymatheia.data.reader.OAIRecordReader`.
 
         :param url: The base URL of the OAI-PMH server
-        :type url: ``string``
+        :type url: ``str``
         :param metadataPrefix: The metadata prefix to use for accessing data
-        :type metadataPrefix: ``string``
+        :type metadataPrefix: ``str``
         :param max_records: The maximum number of records to return. Default (``None``) returns all records
         :type max_records: ``int``
+        :param set_spec: The OAI Set specification for limiting which metadata to fetch
+        :type set_spec: ``str``
         """
-        self._it = Sickle(url).ListRecords(metadataPrefix=metadata_prefix, ignore_deleted=True)
+        self._it = Sickle(url).ListRecords(metadataPrefix=metadata_prefix,
+                                           set=set_spec,
+                                           ignore_deleted=True)
         self._max_records = max_records
 
     def __iter__(self):

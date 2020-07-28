@@ -54,3 +54,17 @@ def test_list_limited_records():
         assert item.metadata['{http://www.openarchives.org/OAI/2.0/oai_dc/}dc'].dc_title
         count = count + 1
     assert count == 10
+
+
+def test_list_set_records():
+    """Test that listing records limited to a Set works."""
+    oai_sets = OAISetReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    oai_set = next(oai_sets)
+    reader = OAIRecordReader('https://digital.iai.spk-berlin.de/viewer/oai',
+                             metadata_prefix='mets',
+                             set_spec=oai_set.setSpec)
+    for item in reader:
+        assert item.header
+        assert item.metadata
+        assert item.metadata['{http://www.loc.gov/METS/}mets']
+        break
