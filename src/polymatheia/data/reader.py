@@ -2,6 +2,9 @@
 
 All readers return their data as :class:`~polymatheia.util.NavigableDict`.
 """
+import json
+import os
+
 from lxml import etree
 from sickle import Sickle
 
@@ -98,3 +101,47 @@ class OAIRecordReader(object):
                 raise StopIteration()
         oai_record = next(self._it)
         return xml_to_navigable_dict(etree.fromstring(oai_record.raw))
+
+
+class LocalReader(object):
+    """The :class:`~polymatheia.data.reader.LocalReader` is an iterator for reading from the local filesystem.
+
+    It is designed to provide access to data serialised using the :class:`~polymatheia.data.writer.LocalWriter`.
+
+    .. important::
+
+       It does **not** guarantee that the order of records is the same as the order in which they were written
+       to the local filesystem.
+    """
+
+    def __init__(self, directory):
+        """Create a new :class:`~polymatheia.data.reader.LocalReader`.
+
+        :param directory: The base directory within which to load the files
+        :type directory: ``str``
+        """
+        self._directory = directory
+        filelist = []
+        for basepath, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if filename.endswith('.json'):
+                    filelist.append(os.path.join(basepath, filename))
+        self._it = iter(filelist)
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.reader.LocalReader` as the iterator."""
+        return self
+
+    def __next__(self):
+        """Return the next file as a :class:`~polymatheia.util.NavigableDict`.
+
+        :raises StopIteration: If no more Records are available
+        """
+        filename = next(self._it)
+        try:
+            with open(filename) as in_f:
+                return NavigableDict(json.load(in_f))
+        except FileNotFoundError:
+            return next(self)
+        except json.JSONDecodeError:
+            return next(self)
