@@ -20,6 +20,7 @@ def test_nested_get_value():
     assert tmp['a'].one == 1
     assert tmp['a']['one'] == 1
     assert tmp['a']['one'] == tmp.a.one
+    assert tmp.get('a.one') == 1
 
 
 def test_fail_missing():
@@ -27,6 +28,13 @@ def test_fail_missing():
     tmp = NavigableDict({'a': 1})
     with pytest.raises(KeyError):
         tmp.b
+
+
+def test_fail_missing_default():
+    """Test that accessing a mising value with a default returns the default."""
+    tmp = NavigableDict({'a': 1})
+    assert tmp.get('b') is None
+    assert tmp.get('b', default=2) == 2
 
 
 def test_basic_set_value():
@@ -77,3 +85,15 @@ def test_nested_list():
     assert tmp.a[0].one == 1
     assert tmp.a[1].two == 2
     assert tmp.a[2] == 3
+    assert tmp.get('a.0.one') == 1
+    assert tmp.get('a[0].one') == 1
+    assert tmp.get('a.1.two') == 2
+    assert tmp.get('a.2') == 3
+
+
+def test_fail_nested_list():
+    """Test that invalid list access is handled correctly."""
+    tmp = NavigableDict({'a': [{'one': 1}, NavigableDict({'two': 2}), 3]})
+    assert tmp.get('a.one') is None
+    assert tmp.get('a.2.test') is None
+    assert tmp.get('a.4') is None

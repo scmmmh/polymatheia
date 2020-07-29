@@ -68,6 +68,80 @@ class NavigableDict(dict):
         for key, value in dict(*args, **kwargs).items():
             setattr(self, key, value)
 
+    def get(self, path, default=None):
+        r"""Get the value specified by the ``path``.
+
+        The ``path`` can either be a ``str``, in which case it is split into its component parts. If it is a ``list``
+        then it is used as is. The following ``str`` ``path`` structures are supported:
+
+        * ``x``: Get the value with the key ``'x'``
+        * ``x.y``: Get the value with the key ``'x'`` and then within that the key ``'y'``
+        * ``x.a``: Get the list with the key ``'x'`` and in that returns the ``a``\ -th element in the list
+        * ``x[a]``: Get the list with the key ``'x'`` and in that returns the ``a``\ -th element in the list
+
+        In general the ``list`` format is only needed if one of the parts used in the ``path`` contains a ``'.'``,
+        ``'['``, or ``']'``.
+
+        :param path: The path to get the value for
+        :type path: ``str`` or ``[str, ...]``
+        :param default: The default value to return if the ``path`` does not identify a value
+        :return: The value identified by ``path`` or the ``default`` value
+        """
+        if isinstance(path, str):
+            path = self._split_path(path)
+        if len(path) == 1:
+            if path[0] in self:
+                return self[path[0]]
+        elif len(path) > 1:
+            if path[0] in self:
+                child = self[path[0]]
+                if isinstance(child, NavigableDict):
+                    return child.get(path[1:], default=default)
+                elif isinstance(child, list):
+                    try:
+                        element = child[int(path[1])]
+                        if len(path) == 2:
+                            return element
+                        elif isinstance(element, NavigableDict):
+                            return element.get(path[2:], default=default)
+                    except ValueError:
+                        pass
+                    except IndexError:
+                        pass
+        return default
+
+    def _split_path(self, path):
+        """Split the ``path`` into a ``tuple``.
+
+        The ``path`` is split on ``'.'``. Additionally, if list indexes are identified via ``[...]``, then the
+        ``path`` is also split on those.
+
+        :param path: The path to split into its parts
+        :type path: ``str``
+        :return: The ``path`` as a ``tuple``
+        :rtype: ``tuple`` of ``str``
+        """
+        result = []
+        tmp = []
+        for character in path:
+            if character == '.':
+                if tmp:
+                    result.append(''.join(tmp))
+                tmp = []
+            elif character == '[':
+                if tmp:
+                    result.append(''.join(tmp))
+                tmp = []
+            elif character == ']':
+                if tmp:
+                    result.append(''.join(tmp))
+                tmp = []
+            else:
+                tmp.append(character)
+        if tmp:
+            result.append(''.join(tmp))
+        return tuple(result)
+
 
 def xml_to_navigable_dict(node):
     r"""Convert the XML node to a dictionary.
