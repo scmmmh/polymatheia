@@ -69,3 +69,11 @@ def test_json_str():
     """Test that the str representation is a JSON serialisation."""
     tmp = NavigableDict({'a': {'one': 1}, 'b': 2})
     assert json.loads(str(tmp)) == tmp
+
+
+def test_nested_list():
+    """Test that nested lists are correctly coerced."""
+    tmp = NavigableDict({'a': [{'one': 1}, NavigableDict({'two': 2}), 3]})
+    assert tmp.a[0].one == 1
+    assert tmp.a[1].two == 2
+    assert tmp.a[2] == 3

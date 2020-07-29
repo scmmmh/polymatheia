@@ -41,6 +41,10 @@ class NavigableDict(dict):
                 self[key] = value
             else:
                 self[key] = NavigableDict(value)
+        elif isinstance(value, list):
+            self[key] = [v if isinstance(v, NavigableDict) else
+                         NavigableDict(v) if isinstance(v, dict)
+                         else v for v in value]
         else:
             self[key] = value
 
