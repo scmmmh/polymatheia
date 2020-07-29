@@ -1,7 +1,7 @@
-"""Tests for the :func:`~polymatheia.util.xml_to_navigable_dict` function."""
+"""Tests for the :func:`~polymatheia.data.xml_to_navigable_dict` function."""
 from lxml import etree
 
-from polymatheia.util import xml_to_navigable_dict
+from polymatheia.data import xml_to_navigable_dict
 
 
 def test_simple_xml():

@@ -1,8 +1,8 @@
-"""Tests for the :class:`~polymatheia.util.NavigableDict`."""
+"""Tests for the :class:`~polymatheia.data.NavigableDict`."""
 import json
 import pytest
 
-from polymatheia.util import NavigableDict
+from polymatheia.data import NavigableDict
 
 
 def test_basic_get_value():
@@ -48,7 +48,7 @@ def test_nested_set_value():
 
 
 def test_nested_nd_set_value():
-    """Test that setting a :class:`~polymatheia.util.NavigableDict` does not needlessly coerce."""
+    """Test that setting a :class:`~polymatheia.data.NavigableDict` does not needlessly coerce."""
     tmp = NavigableDict({'a': 1})
     tmp.a = NavigableDict({'one': 1})
     assert tmp['a'].one == 1
