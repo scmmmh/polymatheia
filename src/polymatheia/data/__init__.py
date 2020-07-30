@@ -110,6 +110,41 @@ class NavigableDict(dict):
                         pass
         return default
 
+    def set(self, path, value):
+        r"""Set the ``value`` at the location specified by ``path``.
+
+        The ``path`` can either be a ``str``, in which case it is split into its component parts. If it is a ``list``
+        then it is used as is. The following ``str`` ``path`` structures are supported:
+
+        * ``x``: Set the value with the key ``'x'``
+        * ``x.y``: Set the value with the key ``'x'`` and then within that the key ``'y'``
+        * ``x.a``: Set the list with the key ``'x'`` and in that set the ``a``\ -th element in the list
+        * ``x[a]``: Set the list with the key ``'x'`` and in that set the ``a``\ -th element in the list
+
+        In general the ``list`` format is only needed if one of the parts used in the ``path`` contains a ``'.'``,
+        ``'['``, or ``']'``.
+
+        :param path: The path to set the value for
+        :type path: ``str`` or ``[str, ...]``
+        :param value: The value to set
+        """
+        if isinstance(path, str):
+            path = self._split_path(path)
+        tmp = self
+        for idx, element in enumerate(path):
+            if idx == len(path) - 1:
+                if isinstance(tmp, list):
+                    tmp[int(element)] = value
+                else:
+                    setattr(tmp, element, value)
+            else:
+                if element not in tmp:
+                    tmp[element] = NavigableDict({})
+                if isinstance(tmp, list):
+                    tmp = tmp[int(element)]
+                else:
+                    tmp = tmp[element]
+
     def _split_path(self, path):
         """Split the ``path`` into a ``tuple``.
 

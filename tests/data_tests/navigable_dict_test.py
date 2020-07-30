@@ -97,3 +97,30 @@ def test_fail_nested_list():
     assert tmp.get('a.one') is None
     assert tmp.get('a.2.test') is None
     assert tmp.get('a.4') is None
+
+
+def test_setting_dotted_path():
+    """Test that setting a value via a dotted path creates the required structure."""
+    tmp = NavigableDict({})
+    tmp.set('data.type', 'tests')
+    tmp.set('data.id', '1')
+    assert tmp.data.type == 'tests'
+    assert tmp.data.id == '1'
+
+
+def test_setting_list_path():
+    """Test that setting a value via a dotted path creates the required structure."""
+    tmp = NavigableDict({})
+    tmp.set(['data', 'type'], 'tests')
+    tmp.set(['data', 'id'], '1')
+    assert tmp.data.type == 'tests'
+    assert tmp.data.id == '1'
+
+
+def test_setting_dotted_path_list_value():
+    """Test that setting a value via a dotted path creates the required structure."""
+    tmp = NavigableDict({'data': {'numbers': [1, 2, 3]}})
+    tmp.set('data.numbers.0', 4)
+    tmp.set('data.numbers.2', 0)
+    assert tmp.data.numbers[0] == 4
+    assert tmp.data.numbers[2] == 0

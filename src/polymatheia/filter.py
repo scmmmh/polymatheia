@@ -143,6 +143,8 @@ class RecordsFilter(object):
     def __next__(self):
         """Return the next :class:`~polymatheia.data.NavigableDict` that matches the filter.
 
+        :return: The next record that matches the filter
+        :rtype: :class:`~polymatheia.data.NavigableDict`
         :raises StopIteration: If no more records are available
         """
         record = next(self._it)
