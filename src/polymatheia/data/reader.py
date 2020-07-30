@@ -5,6 +5,7 @@ All readers return their data as :class:`~polymatheia.data.NavigableDict`.
 import json
 import os
 
+from csv import DictReader
 from lxml import etree
 from requests import get
 from sickle import Sickle
@@ -254,3 +255,32 @@ class EuropeanaSearchReader(object):
                 self.facets = [NavigableDict(facet) for facet in data['facets']]
         else:
             raise Exception(response.json()['error'])
+
+
+class CSVReader(object):
+    """The :class:`~polymatheia.data.reader.CSVReader` provides access to a CSV file."""
+
+    def __init__(self, source):
+        """Create a new :class:`~polymatheia.data.reader.CSVReader`.
+
+        :param source: The source to load the CSV from. Can either be a ``str`` filename or a file-like object
+        """
+        if isinstance(source, str):
+            self._file = open(source)
+            self._it = iter(DictReader(self._file))
+        else:
+            self._file = None
+            self._it = iter(DictReader(source))
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.reader.CSVReader` as the iterator."""
+        return self
+
+    def __next__(self):
+        """Return the next CSV line as a :class:`~polymatheia.data.NavigableDict`."""
+        try:
+            return NavigableDict(next(self._it))
+        except StopIteration:
+            if self._file and not self._file.closed:
+                self._file.close()
+            raise StopIteration()
