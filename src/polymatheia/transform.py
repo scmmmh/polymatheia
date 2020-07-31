@@ -55,27 +55,27 @@ class Transform(object):
         result = NavigableDict({})
         for mapping in self._mappings:
             if mapping[0] == 'copy':
-                result[mapping[1]] = record.get(mapping[2])
+                result.set(mapping[1], record.get(mapping[2]))
             elif mapping[0] == 'static':
-                result[mapping[1]] = mapping[2]
+                result.set(mapping[1], mapping[2])
             elif mapping[0] == 'split':
                 value = record.get(mapping[3])
                 if value:
                     if isinstance(value, str):
                         for idx, part in enumerate(value.split(mapping[2])):
-                            result[mapping[1].format(idx + 1)] = part
+                            result.set(mapping[1].format(idx + 1), part)
                     elif isinstance(value, list):
                         for idx, part in enumerate(value):
-                            result[mapping[1].format(idx + 1)] = part
+                            result.set(mapping[1].format(idx + 1), part)
             elif mapping[0] == 'combine':
-                result[mapping[1]] = [record.get(path) for path in mapping[2:]]
+                result.set(mapping[1], [record.get(path) for path in mapping[2:]])
             elif mapping[0] == 'join':
                 if len(mapping) == 4:
                     value = record.get(mapping[3])
                     if value:
-                        result[mapping[1]] = mapping[2].join(value)
+                        result.set(mapping[1], mapping[2].join(value))
                 else:
-                    result[mapping[1]] = mapping[2].join([record.get(path) for path in mapping[3:]])
+                    result.set(mapping[1], mapping[2].join([record.get(path) for path in mapping[3:]]))
             elif mapping[0] == 'sequence':
                 tmp = record
                 for part in mapping[1:]:
