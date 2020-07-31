@@ -45,5 +45,5 @@ jobs:
 
     - name: Run Tests
       run: |
-        $(pyenv init -)
+        eval "$(pyenv init -)"
         tox -e ${{matrix.python-version}}
