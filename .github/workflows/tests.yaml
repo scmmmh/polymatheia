@@ -40,14 +40,11 @@ jobs:
         if [ "${{matrix.python-version}}" == "py38" ]
         then
             pyenv install 3.8.5
+            pyenv global 3.8.5
         fi
 
     - name: Run Tests
       run: |
-        pyenv which python3.7
-        echo "----"
-        echo $EUROPEANA_API_KEY
-        echo "----"
         tox -e ${{matrix.python-version}}
       env:
         EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
