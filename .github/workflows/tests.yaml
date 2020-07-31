@@ -35,6 +35,7 @@ jobs:
         if [ "${{matrix.python-version}}" == "py37" ]
         then
             pyenv install 3.7.8
+            pyenv global 3.7.8
         fi
         if [ "${{matrix.python-version}}" == "py38" ]
         then
