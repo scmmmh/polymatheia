@@ -45,4 +45,5 @@ jobs:
 
     - name: Run Tests
       run: |
-        bash -c "tox -e ${{matrix.python-version}}"
+        ~/.bashrc
+        tox -e ${{matrix.python-version}}
