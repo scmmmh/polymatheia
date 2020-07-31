@@ -8,23 +8,20 @@ on:
 
 jobs:
   tests:
-    # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     strategy:
       max-parallel: 2
       matrix:
         python-version: [py37, py38]
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
     - name: Add Path Entries
       run: |
         echo "::add-path::$HOME/.local/bin"
         echo "::add-path::$HOME/.pyenv/bin"
-        
+
     - name: Install Base Dependencies
       run: |
         sudo apt-get update
@@ -33,7 +30,7 @@ jobs:
         curl https://pyenv.run | bash
         echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
         exec "$SHELL"
-    
+
     - name: Install Python Version
       run: |
         if [ "${{matrix.python-version}}" == "py37" ]
@@ -45,8 +42,7 @@ jobs:
             pyenv install 3.8.5
         fi
         pyenv versions
-    
+
     - name: Run Tests
       run: |
-        exec "$SHELL"
-        tox -e ${{matrix.python-version}}
+        bash -c "tox -e ${{matrix.python-version}}"
