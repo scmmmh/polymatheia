@@ -8,45 +8,44 @@ on:
 
 jobs:
   tests:
-    # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     strategy:
       max-parallel: 2
       matrix:
         python-version: [py37, py38]
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
     - name: Add Path Entries
       run: |
         echo "::add-path::$HOME/.local/bin"
         echo "::add-path::$HOME/.pyenv/bin"
-        
+
     - name: Install Base Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-        pip3 install tox
+        sudo pip3 install tox tox-pyenv
         curl https://pyenv.run | bash
         echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
-        exec "$SHELL"
-    
+
     - name: Install Python Version
       run: |
         if [ "${{matrix.python-version}}" == "py37" ]
         then
             pyenv install 3.7.8
+            pyenv global 3.7.8
         fi
         if [ "${{matrix.python-version}}" == "py38" ]
         then
             pyenv install 3.8.5
+            pyenv global 3.8.5
         fi
-        pyenv versions
-    
+
     - name: Run Tests
       run: |
-        exec "$SHELL"
+        mkdir tmp
         tox -e ${{matrix.python-version}}
+      env:
+        EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
