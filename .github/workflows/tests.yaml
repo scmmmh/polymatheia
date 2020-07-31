@@ -40,11 +40,9 @@ jobs:
         then
             pyenv install 3.8.5
         fi
-        pyenv versions
 
     - name: Run Tests
       run: |
-        pyenv versions
         pyenv which python3.7
         echo "----"
         echo $EUROPEANA_API_KEY
