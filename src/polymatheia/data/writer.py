@@ -4,6 +4,7 @@ import os
 
 from copy import copy
 from csv import DictWriter
+from pandas import DataFrame
 
 from polymatheia.util import identifier_to_directory_structure
 
@@ -105,3 +106,43 @@ class CSVWriter():
                                         extrasaction=self._extras_action)
                 csv_writer.writeheader()
             csv_writer.writerow(record)
+
+
+class PandasDFWriter(object):
+    """The :class:`~polymatheia.data.writer.PandasDFWriter` writes records to a Pandas :class:`~pandas.DataFrame`.
+
+    After calling the :meth:`~polymatheia.data.writer.PandasDFWriter.write` method, the dataframe is available via
+    :attr:`~polymatheia.data.writer.PandasDFWriter.df`.
+
+    The :class:`~polymatheia.data.writer.PandasDFWriter` attempts to automatically coerce columns to integers or
+    floats.
+
+    The :class:`~polymatheia.data.writer.CSVWriter` assumes that no record contains any kind of nested data. If
+    it is passed nested data, then the behaviour is undefined.
+    """
+
+    def __init__(self):
+        """Create a new :class:`~polymatheia.data.writer.PandasDFWriter`."""
+        self.df = None
+
+    def write(self, records):
+        """Write the ``records`` to the Pandas :class:`~pandas.DataFrame`.
+
+        :param records: The records to write
+        :type records: Iterable of :class:`~polymatheia.data.NavigableDict`
+        """
+        columns = {}
+        for record in records:
+            for key, value in record.items():
+                if key not in columns:
+                    columns[key] = []
+                columns[key].append(value)
+        for key, values in columns.items():
+            try:
+                columns[key] = [int(v) for v in values]
+            except ValueError:
+                try:
+                    columns[key] = [float(v) for v in values]
+                except ValueError:
+                    pass
+        self.df = DataFrame(columns)
