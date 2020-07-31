@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [py37]
+        python-version: [py37, py38]
 
     steps:
     - uses: actions/checkout@v2
@@ -45,6 +45,7 @@ jobs:
 
     - name: Run Tests
       run: |
+        mkdir tmp
         tox -e ${{matrix.python-version}}
       env:
         EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
