@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [py37, py38]
+        python-version: [py37]
 
     steps:
     - uses: actions/checkout@v2
@@ -50,3 +50,5 @@ jobs:
         echo $EUROPEANA_API_KEY
         echo "----"
         tox -e ${{matrix.python-version}}
+      env:
+        EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
