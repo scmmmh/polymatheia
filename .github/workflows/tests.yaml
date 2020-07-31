@@ -46,4 +46,5 @@ jobs:
     - name: Run Tests
       run: |
         eval "$(pyenv init -)"
+        echo $EUROPEANA_API_KEY
         tox -e ${{matrix.python-version}}
