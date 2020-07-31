@@ -45,6 +45,7 @@ jobs:
     - name: Run Tests
       run: |
         pyenv versions
+        pyenv which python3.7
         echo "----"
         echo $EUROPEANA_API_KEY
         echo "----"
