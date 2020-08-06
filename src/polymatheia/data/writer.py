@@ -2,7 +2,6 @@
 import json
 import os
 
-from copy import copy
 from csv import DictWriter
 from pandas import DataFrame
 
@@ -36,12 +35,7 @@ class LocalWriter():
         :type records: Iterable of :class:`~polymatheia.data.NavigableDict`
         """
         for record in records:
-            path = copy(self._id_path)
-            identifier = record
-            while path:
-                identifier = identifier[path[0]]
-                path = path[1:]
-            identifier = identifier._text
+            identifier = record.get(self._id_path)
             file_path = os.path.join(
                 self._directory,
                 *identifier_to_directory_structure(identifier),
