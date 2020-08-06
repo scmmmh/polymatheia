@@ -36,13 +36,14 @@ class LocalWriter():
         """
         for record in records:
             identifier = record.get(self._id_path)
-            file_path = os.path.join(
-                self._directory,
-                *identifier_to_directory_structure(identifier),
-                identifier)
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            with open(f'{file_path}.json', 'w') as out_f:
-                json.dump(record, out_f)
+            if identifier:
+                file_path = os.path.join(
+                    self._directory,
+                    *identifier_to_directory_structure(identifier),
+                    identifier)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(f'{file_path}.json', 'w') as out_f:
+                    json.dump(record, out_f)
 
 
 class CSVWriter():
