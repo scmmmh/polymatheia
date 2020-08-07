@@ -91,12 +91,16 @@ def test_nested_list():
     assert tmp.get('a.2') == 3
 
 
-def test_fail_nested_list():
-    """Test that invalid list access is handled correctly."""
+def test_nested_list_fail():
+    """Test that nested lists are correctly coerced."""
     tmp = NavigableDict({'a': [{'one': 1}, NavigableDict({'two': 2}), 3]})
-    assert tmp.get('a.one') is None
-    assert tmp.get('a.2.test') is None
-    assert tmp.get('a.4') is None
+    assert tmp.get('a[4].one') is None
+
+
+def test_nested_list_get():
+    """Test that invalid list access is handled correctly."""
+    tmp = NavigableDict({'a': [{'one': 1}, {'one': 2}, 3]})
+    assert tmp.get('a.one') == [1, 2, None]
 
 
 def test_setting_dotted_path():

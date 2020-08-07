@@ -82,6 +82,10 @@ class NavigableDict(dict):
         In general the ``list`` format is only needed if one of the parts used in the ``path`` contains a ``'.'``,
         ``'['``, or ``']'``.
 
+        This differs from just using attribute access, in how it handles lists. If a value is a list and the next path
+        element is not a list index, then it will return a list, applying the remainder of the path to each element
+        in the list.
+
         :param path: The path to get the value for
         :type path: ``str`` or ``[str, ...]``
         :param default: The default value to return if the ``path`` does not identify a value
@@ -105,7 +109,13 @@ class NavigableDict(dict):
                         elif isinstance(element, NavigableDict):
                             return element.get(path[2:], default=default)
                     except ValueError:
-                        pass
+                        result = []
+                        for element in child:
+                            if isinstance(element, NavigableDict):
+                                result.append(element.get(path[1:]))
+                            else:
+                                result.append(default)
+                        return result
                     except IndexError:
                         pass
         return default
