@@ -192,9 +192,13 @@ def xml_to_navigable_dict(node):
     :rtype: :class:`~polymatheia.data.NavigableDict`
     """
     namespaces = dict([(v, k) for k, v in node.nsmap.items()])
-    tmp = {'_text': node.text,
-           '_tail': node.tail,
-           '_attrib': {}}
+    tmp = {}
+    if node.text:
+        tmp['_text'] = node.text
+    if node.tail:
+        tmp['_tail'] = node.tail
+    if len(node.attrib) > 0:
+        tmp['_attrib'] = {}
     for key, value in node.attrib.items():
         tmp['_attrib'][namespace_mapping(key, namespaces)] = value
     for child in node:

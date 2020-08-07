@@ -7,7 +7,21 @@ from polymatheia.data import xml_to_navigable_dict
 def test_simple_xml():
     """Test basic parsing of XML."""
     tree = xml_to_navigable_dict(etree.fromstring('<test><element>Test</element></test>'))
+    assert '_text' not in tree
+    assert '_tail' not in tree
+    assert '_attrib' not in tree
     assert tree.element._text == 'Test'
+    assert '_tail' not in tree.element
+    assert '_attrib' not in tree.element
+
+
+def test_tail_xml():
+    """Test the text and tail appear where expected."""
+    tree = xml_to_navigable_dict(etree.fromstring('<test><element>Test</element> this</test>'))
+    assert '_text' not in tree
+    assert '_tail' not in tree
+    assert tree.element._text == 'Test'
+    assert tree.element._tail == ' this'
 
 
 def test_list_xml():
