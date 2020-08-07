@@ -13,7 +13,7 @@ def namespace_mapping(identifier, namespaces):
     :param namespaces: Namespaces to use for mapping
     :type namespaces: ``dict``
     """
-    if namespaces:
+    if namespaces and identifier:
         match = re.fullmatch(r'(?:\{([^}]+)\})?(.+)', identifier)
         if match:
             if match.group(1) in namespaces:
