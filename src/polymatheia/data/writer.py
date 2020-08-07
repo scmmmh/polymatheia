@@ -3,9 +3,8 @@ import json
 import os
 
 from csv import DictWriter
+from hashlib import sha256
 from pandas import DataFrame
-
-from polymatheia.util import identifier_to_directory_structure
 
 
 class LocalWriter():
@@ -37,10 +36,12 @@ class LocalWriter():
         for record in records:
             identifier = record.get(self._id_path)
             if identifier:
+                hash = sha256(identifier.encode('utf-8'))
+                hex = hash.hexdigest()
                 file_path = os.path.join(
                     self._directory,
-                    *identifier_to_directory_structure(identifier),
-                    identifier)
+                    *[hex[idx:idx+4] for idx in range(0, len(hex), 4)],
+                    hex)
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(f'{file_path}.json', 'w') as out_f:
                     json.dump(record, out_f)
