@@ -106,7 +106,7 @@ class OAIRecordReader(object):
             if self._max_records < 0:
                 raise StopIteration()
         oai_record = next(self._it)
-        return xml_to_navigable_dict(etree.fromstring(oai_record.raw))
+        return xml_to_navigable_dict(etree.fromstring(oai_record.raw, parser=etree.XMLParser(remove_comments=True)))
 
 
 class LocalReader(object):
