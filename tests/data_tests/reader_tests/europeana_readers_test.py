@@ -127,6 +127,15 @@ def test_reusability_query():
     assert count == 89
 
 
+def test_cursor_search():
+    """Test that the cursor search allows us to go past 1000 records."""
+    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Gutzkow OR Zäunemann OR Heyse')
+    count = 0
+    for _ in reader:
+        count = count + 1
+    assert count == 1009
+
+
 def test_invalid_api_key():
     """Test that an invalid API key generates an error."""
     with pytest.raises(Exception):

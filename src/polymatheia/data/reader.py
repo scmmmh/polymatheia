@@ -194,7 +194,8 @@ class EuropeanaSearchReader(object):
         self._api_key = api_key
         self._query = query
         self._max_records = max_records
-        self._offset = 1
+        self._cursor = '*'
+        self._offset = 0
         self._query_facets = query_facets
         self._media = media
         self._thumbnail = thumbnail
@@ -230,7 +231,7 @@ class EuropeanaSearchReader(object):
         """Run the actual search query."""
         params = [('wskey', self._api_key),
                   ('query', self._query),
-                  ('start', self._offset)]
+                  ('cursor', self._cursor)]
         if self._max_records and self._max_records < 50:
             params.append(('rows', self._max_records))
         else:
@@ -251,6 +252,7 @@ class EuropeanaSearchReader(object):
             self._it = iter(data['items'])
             self.result_count = data['totalResults']
             self._offset = self._offset + data['itemsCount']
+            self._cursor = data['nextCursor']
             if 'facets' in data:
                 self.facets = [NavigableDict(facet) for facet in data['facets']]
         else:
