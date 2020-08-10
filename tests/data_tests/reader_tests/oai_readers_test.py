@@ -4,7 +4,7 @@ from polymatheia.data.reader import OAIMetadataReader, OAISetReader, OAIRecordRe
 
 def test_list_metadata():
     """Test that OAI metadata format listing works."""
-    reader = OAIMetadataReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    reader = OAIMetadataReader('http://www.digizeitschriften.de/oai2/')
     oai_dc_found = False
     for item in reader:
         assert item.schema
@@ -17,7 +17,7 @@ def test_list_metadata():
 
 def test_list_sets():
     """Test that OAI set listing works."""
-    reader = OAISetReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    reader = OAISetReader('http://www.digizeitschriften.de/oai2/')
     for item in reader:
         assert item.setSpec
         assert item.setName
@@ -25,7 +25,7 @@ def test_list_sets():
 
 def test_list_records_oai_dc():
     """Test that listing records in the default oai_dc metadata works."""
-    reader = OAIRecordReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/')
     for item in reader:
         assert item.header
         assert item.header.identifier
@@ -37,7 +37,7 @@ def test_list_records_oai_dc():
 
 def test_list_records_mets():
     """Test that listing records in the mets metadata works."""
-    reader = OAIRecordReader('https://digital.iai.spk-berlin.de/viewer/oai', metadata_prefix='mets')
+    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/', metadata_prefix='mets')
     for item in reader:
         assert item.header
         assert item.metadata
@@ -47,7 +47,7 @@ def test_list_records_mets():
 
 def test_list_limited_records():
     """Test that listing records can be limited."""
-    reader = OAIRecordReader('https://digital.iai.spk-berlin.de/viewer/oai', max_records=10)
+    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/', max_records=10)
     count = 0
     for item in reader:
         assert item.metadata['{http://www.openarchives.org/OAI/2.0/oai_dc/}dc']
@@ -58,9 +58,9 @@ def test_list_limited_records():
 
 def test_list_set_records():
     """Test that listing records limited to a Set works."""
-    oai_sets = OAISetReader('https://digital.iai.spk-berlin.de/viewer/oai')
+    oai_sets = OAISetReader('http://www.digizeitschriften.de/oai2/')
     oai_set = next(oai_sets)
-    reader = OAIRecordReader('https://digital.iai.spk-berlin.de/viewer/oai',
+    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/',
                              metadata_prefix='mets',
                              set_spec=oai_set.setSpec)
     for item in reader:
