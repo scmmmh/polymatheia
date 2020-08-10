@@ -148,11 +148,11 @@ class NavigableDict(dict):
                 else:
                     setattr(tmp, element, value)
             else:
-                if element not in tmp:
-                    tmp[element] = NavigableDict({})
                 if isinstance(tmp, list):
                     tmp = tmp[int(element)]
                 else:
+                    if element not in tmp:
+                        tmp[element] = NavigableDict({})
                     tmp = tmp[element]
 
     def _split_path(self, path):

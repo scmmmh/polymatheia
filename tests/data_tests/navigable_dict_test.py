@@ -128,3 +128,10 @@ def test_setting_dotted_path_list_value():
     tmp.set('data.numbers.2', 0)
     assert tmp.data.numbers[0] == 4
     assert tmp.data.numbers[2] == 0
+
+
+def test_setting_dotted_path_nested_list_value():
+    """Test that setting a value via a dotted path works across a nested list."""
+    tmp = NavigableDict({'data': {'numbers': [{'a': 1}]}})
+    tmp.set('data.numbers.0.a', 4)
+    assert tmp.data.numbers[0].a == 4
