@@ -72,6 +72,14 @@ def test_less_than_or_equal_filter():
     assert fltr(NavigableDict({'a': {'one': 4}})) is False
 
 
+def test_exists_filter():
+    """Test that the exist filter works."""
+    fltr = Filter(('exists', 'a.one'))
+    assert fltr(NavigableDict({'a': {'one': 1}})) is True
+    assert fltr(NavigableDict({'a': {'two': 1}})) is False
+    assert fltr(NavigableDict({'b': {'one': 1}})) is False
+
+
 def test_not_filter():
     """Test the not filter."""
     fltr = Filter(('not', ('eq', 'a.one', 1)))

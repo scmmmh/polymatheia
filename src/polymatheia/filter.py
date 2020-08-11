@@ -11,6 +11,7 @@ All filters support the same expression language and are designed to work with t
 * Less than: ``('lt', param1, param2)``: returns ``True`` if the param1 is less than param2
 * Less than or equal: ``('lte', param1, param2)``: returns ``True`` if the param1 is less than or equal to param2
 * Containment: ``('contains', param1, param2)``: returns ``True`` if the param2 is contained within param1
+* Exists: ``('exists', param1)``: returns ``True`` if the param1 exists and has a value that is not ``None``
 * Not: ``('not', expression)``: See below
 * And: ``('and', expression1, expression2, ...)``: See below
 * Or: ``('and', expression1, expression2, ...)``: See below
@@ -92,6 +93,8 @@ class Filter(object):
                 return self._get_value(record, self._expression[2]) in self._get_value(record, self._expression[1])
             except TypeError:
                 return False
+        elif self._expression[0] == 'exists':
+            return self._get_value(record, self._expression[1]) is not None
         elif self._expression[0] == 'not':
             return not self._expression[1](record)
         elif self._expression[0] == 'and':
