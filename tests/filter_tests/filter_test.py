@@ -138,3 +138,11 @@ def test_false_filter():
     assert fltr(NavigableDict({'a': {'one': 1}})) is False
     assert fltr(NavigableDict({'a': {'one': 2}})) is False
     assert fltr(NavigableDict({'a': {'one': '1'}})) is False
+
+
+def test_contains_filter():
+    """Test the contains filter."""
+    fltr = Filter(('contains', ['a'], '2'))
+    assert fltr(NavigableDict({'a': ['1', '2', '3']})) is True
+    assert fltr(NavigableDict({'a': '2'})) is True
+    assert fltr(NavigableDict({'a': [1, 2, 3]})) is False
