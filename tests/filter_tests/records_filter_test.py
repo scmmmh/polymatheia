@@ -47,3 +47,17 @@ def test_permissive_filter():
     for _ in RecordsFilter(reader, ('eq', 'header.setSpec._text', 'argentinischetheaterundromanzeitschriften')):
         count = count + 1
     assert count == 10
+
+
+def test_repeat_filter():
+    """Tests that repeating the filter works."""
+    reader = LocalReader('tests/fixtures/local_reader_test')
+    filtered = RecordsFilter(reader, ('eq', 'header.setSpec._text', 'argentinischetheaterundromanzeitschriften'))
+    assert len(list(filtered)) == len(list(filtered)) == 10
+
+
+def test_filter_iterator():
+    """Tests that repeating the filter works."""
+    reader = LocalReader('tests/fixtures/local_reader_test')
+    it = iter(RecordsFilter(reader, ('eq', 'header.setSpec._text', 'argentinischetheaterundromanzeitschriften')))
+    assert it == iter(it)

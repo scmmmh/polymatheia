@@ -1,10 +1,10 @@
 """Tests for various OAI readers."""
-from polymatheia.data.reader import OAIMetadataReader, OAISetReader, OAIRecordReader
+from polymatheia.data.reader import OAIMetadataFormatReader, OAISetReader, OAIRecordReader
 
 
 def test_list_metadata():
     """Test that OAI metadata format listing works."""
-    reader = OAIMetadataReader('http://www.digizeitschriften.de/oai2/')
+    reader = OAIMetadataFormatReader('http://www.digizeitschriften.de/oai2/')
     oai_dc_found = False
     for item in reader:
         assert item.schema
@@ -15,12 +15,28 @@ def test_list_metadata():
     assert oai_dc_found is True
 
 
+def test_list_metadata_repeat():
+    """Test that using the OAIMetadataFormatReader twice works."""
+    reader = OAIMetadataFormatReader('http://www.digizeitschriften.de/oai2/')
+    count1 = len(list(iter(reader)))
+    count2 = len(list(iter(reader)))
+    assert count1 == count2
+
+
 def test_list_sets():
     """Test that OAI set listing works."""
     reader = OAISetReader('http://www.digizeitschriften.de/oai2/')
     for item in reader:
         assert item.setSpec
         assert item.setName
+
+
+def test_list_sets_repeat():
+    """Test that using the OAISetReader twice works."""
+    reader = OAISetReader('http://www.digizeitschriften.de/oai2/')
+    count1 = len(list(iter(reader)))
+    count2 = len(list(iter(reader)))
+    assert count1 == count2
 
 
 def test_list_records_oai_dc():
@@ -59,7 +75,7 @@ def test_list_limited_records():
 def test_list_set_records():
     """Test that listing records limited to a Set works."""
     oai_sets = OAISetReader('http://www.digizeitschriften.de/oai2/')
-    oai_set = next(oai_sets)
+    oai_set = next(iter(oai_sets))
     reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/',
                              metadata_prefix='mets',
                              set_spec=oai_set.setSpec)
@@ -68,3 +84,11 @@ def test_list_set_records():
         assert item.metadata
         assert item.metadata['{http://www.loc.gov/METS/}mets']
         break
+
+
+def test_list_records_repeat():
+    """Test that using the OAIRecordReader twice works."""
+    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/', max_records=10)
+    count1 = len(list(iter(reader)))
+    count2 = len(list(iter(reader)))
+    assert count1 == count2

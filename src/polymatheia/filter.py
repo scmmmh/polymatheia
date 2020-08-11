@@ -123,7 +123,7 @@ class Filter(object):
 
 
 class RecordsFilter(object):
-    """The :class:`~polymatheia.filter.RecordsFilter` provides a records filter iterator.
+    """The :class:`~polymatheia.filter.RecordsFilter` provides a records filter iteration container.
 
     It allows iterating over all :class:`~polymatheia.data.NavigableDict` that match the given filter expression.
     Filtering is performed using a :class:`~polymatheia.filter.Filter`.
@@ -136,6 +136,28 @@ class RecordsFilter(object):
         :param expression: The filter expression to apply
         :type expression: ``tuple`` or :class:`~polymatheia.filter.Filter`
         """
+        self._records = records
+        self._expression = expression
+
+    def __iter__(self):
+        """Return a new class:`~polymatheia.filter.RecordsFilterIterator` as the iterator."""
+        return RecordsFilterIterator(self._records, self._expression)
+
+
+class RecordsFilterIterator(object):
+    """The :class:`~polymatheia.filter.RecordsFilterIterator` provides a records filter iterator.
+
+    It allows iterating over all :class:`~polymatheia.data.NavigableDict` that match the given filter expression.
+    Filtering is performed using a :class:`~polymatheia.filter.Filter`.
+    """
+
+    def __init__(self, records, expression):
+        """Create a new :class:`~polymatheia.filter.RecordsFilterIterator`.
+
+        :param records: The source records to iterate over and filter.
+        :param expression: The filter expression to apply
+        :type expression: ``tuple`` or :class:`~polymatheia.filter.Filter`
+        """
         self._it = iter(records)
         if isinstance(expression, Filter):
             self._expression = expression
@@ -143,7 +165,7 @@ class RecordsFilter(object):
             self._expression = Filter(expression)
 
     def __iter__(self):
-        """Return this class:`~polymatheia.filter.RecordsFilter` as the iterator."""
+        """Return this class:`~polymatheia.filter.RecordsFilterIterator` as the iterator."""
         return self
 
     def __next__(self):

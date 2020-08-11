@@ -188,6 +188,71 @@ class NavigableDict(dict):
         return tuple(result)
 
 
+class NavigableDictIterator(object):
+    """The :class:`~polymatheia.data.NavigableDictIterator` maps values to :class:`~polymatheia.data.NavigableDict`.
+
+    If the iterator it wraps returns :func:`dict` objects, then these are simply converted into
+    :class:`~polymatheia.data.NavigableDict` objects. If a ``mapper`` function is provided, then this function is
+    called with each value and it must return a :func:`dict` object that is then converted into a
+    :class:`~polymatheia.data.NavigableDict` object. Otherwise a :class:`~polymatheia.data.NavigableDict` is returned
+    that has a single key ``value``, with the wrapped iterator value.
+    """
+
+    def __init__(self, it, mapper=None):
+        """Create a new :class:`~polymatheia.data.NavigableDictIterator`.
+
+        :param it: The iterator that provides the values.
+        :param mapper: An optional mapping function converting a single iterator value into a :func:`dict` object.
+        """
+        self._it = it
+        self._mapper = mapper
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return self
+
+    def __next__(self):
+        """Return the next :class:`~polymatheia.data.NavigableDict`.
+
+        :raises StopIteration: If no more :class:`~polymatheia.data.NavigableDict` are available
+        """
+        value = next(self._it)
+        if self._mapper:
+            return NavigableDict(self._mapper(value))
+        elif isinstance(value, dict):
+            return NavigableDict(value)
+        else:
+            return NavigableDict({'value': value})
+
+
+class LimitingIterator(object):
+    """The :class:`~polymatheia.data.LimitingIterator` limits the number of records returned from a wrapped iterator."""
+
+    def __init__(self, it, max_records):
+        """Create a new :class:`~polymatheia.data.LimitingIterator`.
+
+        :param it: The wrapped iterator.
+        :param max_records: The maximum number of records to return.
+        :type max_records: ``number``
+        """
+        self._it = it
+        self._max_records = max_records
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.LimitingIterator` as the iterator."""
+        return self
+
+    def __next__(self):
+        """Return the next value.
+
+        :raises StopIteration: If no more values are available
+        """
+        if self._max_records <= 0:
+            raise StopIteration()
+        self._max_records = self._max_records - 1
+        return next(self._it)
+
+
 def xml_to_navigable_dict(node):
     r"""Convert the XML node to a dictionary.
 

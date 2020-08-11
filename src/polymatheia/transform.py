@@ -85,7 +85,7 @@ class Transform(object):
 
 
 class RecordsTransform(object):
-    """The :class:`~polymatheia.transform.RecordsTransform` provides a record transformation iterator.
+    """The :class:`~polymatheia.transform.RecordsTransform` provides a record transformation iterator container.
 
     The actual transformation is performed using a :class:`~polymatheia.transform.Transform` that is applied to
     each record in the source iterator.
@@ -98,11 +98,33 @@ class RecordsTransform(object):
         :param mappings: The mappings that are applied to each record
         :type mappings: ``list``
         """
+        self._records = records
+        self._mappings = mappings
+
+    def __iter__(self):
+        """Return this class:`~polymatheia.transform.RecordsTransform` as the iterator."""
+        return RecordsTransformIterator(self._records, self._mappings)
+
+
+class RecordsTransformIterator(object):
+    """The :class:`~polymatheia.transform.RecordsTransformIterator` provides a record transformation iterator.
+
+    The actual transformation is performed using a :class:`~polymatheia.transform.Transform` that is applied to
+    each record in the source iterator.
+    """
+
+    def __init__(self, records, mappings):
+        """Create a new :class:`~polymatheia.transform.RecordsTransformIterator`.
+
+        :param records: The source records to iterate over and transform
+        :param mappings: The mappings that are applied to each record
+        :type mappings: ``list``
+        """
         self._it = iter(records)
         self._transform = Transform(mappings)
 
     def __iter__(self):
-        """Return this class:`~polymatheia.transform.RecordsTransform` as the iterator."""
+        """Return this class:`~polymatheia.transform.RecordsTransformIterator` as the iterator."""
         return self
 
     def __next__(self):

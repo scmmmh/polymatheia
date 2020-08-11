@@ -16,6 +16,12 @@ def test_basic_query():
     assert reader.result_count == count
 
 
+def test_query_repeat():
+    """Test that iterating multiple times works."""
+    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Python', max_records=10)
+    assert len(list(reader)) == len(list(reader))
+
+
 def test_limited_query():
     """Test that result set limiting works."""
     reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Python', max_records=65)
@@ -140,3 +146,10 @@ def test_invalid_api_key():
     """Test that an invalid API key generates an error."""
     with pytest.raises(Exception):
         EuropeanaSearchReader('Invalid', 'Python', max_records=35)
+
+
+def test_europeana_iterator():
+    """Test that the iter function works on the EuropeanaSearchReader."""
+    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Python', reusability='open')
+    it = iter(reader)
+    assert it == iter(it)

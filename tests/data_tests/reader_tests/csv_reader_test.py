@@ -14,6 +14,12 @@ def test_read_from_filename():
     assert count == 10
 
 
+def test_read_from_filename_repeat():
+    """Test that repeated iteration from a filename works."""
+    reader = CSVReader('tests/fixtures/csv_reader_test/example_csv.csv')
+    assert len(list(reader)) == len(list(reader))
+
+
 def test_read_from_file():
     """Test reading from an already opened file."""
     with open('tests/fixtures/csv_reader_test/example_csv.csv') as in_file:

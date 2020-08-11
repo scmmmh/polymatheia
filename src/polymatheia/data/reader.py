@@ -10,40 +10,33 @@ from lxml import etree
 from requests import get
 from sickle import Sickle
 
-from polymatheia.data import NavigableDict, xml_to_navigable_dict
+from polymatheia.data import NavigableDict, NavigableDictIterator, LimitingIterator, xml_to_navigable_dict
 
 
-class OAIMetadataReader(object):
-    """The class:`~polymatheia.data.reader.OAIMetadataReader` is an iterator for OAI-PMH MetadataFormat.
+class OAIMetadataFormatReader(object):
+    """The class:`~polymatheia.data.reader.OAIMetadataFormatReader` is a container for OAI-PMH MetadataFormat.
 
     The underlying library automatically handles the continuation parameters, allowing for simple iteration.
     """
 
     def __init__(self, url):
-        """Construct a new class:`~polymatheia.data.reader.OAIMetadataReader`.
+        """Construct a new class:`~polymatheia.data.reader.OAIMetadataFormatReader`.
 
         :param url: The base URL of the OAI-PMH server
         :type url: ``str``
         """
-        self._it = Sickle(url).ListMetadataFormats()
+        self._url = url
 
     def __iter__(self):
-        """Return this class:`~polymatheia.data.reader.OAIMetadataReader` as the iterator."""
-        return self
-
-    def __next__(self):
-        """Return the next OAI-PMH MetadataFormt as a :class:`~polymatheia.data.NavigableDict`.
-
-        :raises StopIteration: If no more Sets are available
-        """
-        oai_metadata = next(self._it)
-        return NavigableDict({'schema': oai_metadata.schema,
-                              'metadataPrefix': oai_metadata.metadataPrefix,
-                              'metadataNamespace': oai_metadata.metadataNamespace})
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(Sickle(self._url).ListMetadataFormats(),
+                                     mapper=lambda meta_format: {'schema': meta_format.schema,
+                                                                 'metadataPrefix': meta_format.metadataPrefix,
+                                                                 'metadataNamespace': meta_format.metadataNamespace})
 
 
 class OAISetReader(object):
-    """The class:`~polymatheia.data.reader.OAISetReader` is an iterator for OAI-PMH Sets.
+    """The class:`~polymatheia.data.reader.OAISetReader` is an iteration container for OAI-PMH Sets.
 
     The underlying library automatically handles the continuation parameters, allowing for simple iteration.
     """
@@ -54,23 +47,17 @@ class OAISetReader(object):
         :param url: The base URL of the OAI-PMH server
         :type url: ``str``
         """
+        self._url = url
         self._it = Sickle(url).ListSets()
 
     def __iter__(self):
-        """Return this class:`~polymatheia.data.reader.OAISetReader` as the iterator."""
-        return self
-
-    def __next__(self):
-        """Return the next OAI-PMH Set as a :class:`~polymatheia.data.NavigableDict`.
-
-        :raises StopIteration: If no more Sets are available
-        """
-        oai_set = next(self._it)
-        return NavigableDict({'setSpec': oai_set.setSpec, 'setName': oai_set.setName})
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(Sickle(self._url).ListSets(),
+                                     mapper=lambda oai_set: {'setSpec': oai_set.setSpec, 'setName': oai_set.setName})
 
 
 class OAIRecordReader(object):
-    """The :class:`~polymatheia.data.reader.OAIRecordReader` is an iterator for OAI-PMH Records.
+    """The :class:`~polymatheia.data.reader.OAIRecordReader` is an iteration container for OAI-PMH Records.
 
     The underlying library automatically handles the continuation parameters, allowing for simple iteration.
     """
@@ -87,30 +74,30 @@ class OAIRecordReader(object):
         :param set_spec: The OAI Set specification for limiting which metadata to fetch
         :type set_spec: ``str``
         """
-        self._it = Sickle(url).ListRecords(metadataPrefix=metadata_prefix,
-                                           set=set_spec,
-                                           ignore_deleted=True)
+        self._url = url
+        self._metadata_prefix = metadata_prefix
+        self._set_spec = set_spec
         self._max_records = max_records
 
     def __iter__(self):
-        """Return this :class:`~polymatheia.data.reader.OAIRecordReader` as the iterator."""
-        return self
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator.
 
-    def __next__(self):
-        """Return the next OAI-PMH Record as a :class:`~polymatheia.data.NavigableDict`.
-
-        :raises StopIteration: If no more Records are available
+        If ``max_records`` is set, then the class:`~polymatheia.data.NavigableDictIterator` is wrapped in a
+        class:`~polymatheia.data.LimitingIterator`.
         """
+        it = NavigableDictIterator(Sickle(self._url).ListRecords(metadataPrefix=self._metadata_prefix,
+                                                                 set=self._set_spec,
+                                                                 ignore_deleted=True),
+                                   mapper=lambda record: xml_to_navigable_dict(etree.fromstring(
+                                       record.raw,
+                                       parser=etree.XMLParser(remove_comments=True))))
         if self._max_records is not None:
-            self._max_records = self._max_records - 1
-            if self._max_records < 0:
-                raise StopIteration()
-        oai_record = next(self._it)
-        return xml_to_navigable_dict(etree.fromstring(oai_record.raw, parser=etree.XMLParser(remove_comments=True)))
+            it = LimitingIterator(it, self._max_records)
+        return it
 
 
 class LocalReader(object):
-    """The :class:`~polymatheia.data.reader.LocalReader` is an iterator for reading from the local filesystem.
+    """The :class:`~polymatheia.data.reader.LocalReader` is a container for reading from the local filesystem.
 
     It is designed to provide access to data serialised using the :class:`~polymatheia.data.writer.LocalWriter`.
 
@@ -127,30 +114,29 @@ class LocalReader(object):
         :type directory: ``str``
         """
         self._directory = directory
-        filelist = []
+        self._filelist = []
         for basepath, _, filenames in os.walk(directory):
             for filename in filenames:
                 if filename.endswith('.json'):
-                    filelist.append(os.path.join(basepath, filename))
-        self._it = iter(filelist)
+                    self._filelist.append(os.path.join(basepath, filename))
 
     def __iter__(self):
-        """Return this :class:`~polymatheia.data.reader.LocalReader` as the iterator."""
-        return self
+        """Return a new :class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(iter(self._filelist),
+                                     mapper=self._load)
 
-    def __next__(self):
+    def _load(self, filename):
         """Return the next file as a :class:`~polymatheia.data.NavigableDict`.
 
-        :raises StopIteration: If no more Records are available
+        :raises StopIteration: If the file cannot be read or is not a valid JSON file
         """
-        filename = next(self._it)
         try:
             with open(filename) as in_f:
-                return NavigableDict(json.load(in_f))
+                return json.load(in_f)
         except FileNotFoundError:
-            return next(self)
+            raise StopIteration()
         except json.JSONDecodeError:
-            return next(self)
+            raise StopIteration()
 
 
 class EuropeanaSearchReader(object):
@@ -201,12 +187,70 @@ class EuropeanaSearchReader(object):
         self._thumbnail = thumbnail
         self._reusability = reusability
         self._profile = profile
+        it = iter(self)
+        self.result_count = it.result_count
+        self.facets = it.facets
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.reader.EuropeanaSearchReader`` as the iterator."""
+        return EuropeanaSearchIterator(self._api_key, self._query, self._max_records, self._query_facets, self._media,
+                                       self._thumbnail, self._reusability, self._profile)
+
+
+class EuropeanaSearchIterator(object):
+    """The :class:`~polymatheia.data.reader.EuropeanaSearchIterator` provides an iterator for the Europeana Search API.
+
+    The initial search is run immediately on creating a new :class:`~polymatheia.data.reader.EuropeanaSearchIterator`.
+    The iterator will automatically paginate through the full set of result pages.
+
+    .. attribute:: result_count
+       :type: ``int``
+
+       The total number of records returned by the search.
+
+    .. attribute:: facets
+       :type: ``list`` of :class:`~polymatheia.data.NavigableDict`
+
+       The facets generated by the search. This is only set if the ``profile`` parameter is set to ``'facets'``.
+    """
+
+    def __init__(self, api_key, query, max_records=None, query_facets=None, media=None, thumbnail=None,
+                 reusability=None, profile=None):
+        """Create a new :class:`~polymatheia.data.reader.EuropeanaSearchReader`.
+
+        :param api_key: The Europeana API key
+        :type api_key: ``str``
+        :param query: The query string
+        :type query: ``str``
+        :param max_records: The maximum number of records to return. Defaults to all records
+        :type max_records: ``int``
+        :param query_facets: The list of query facets to apply to the search
+        :type query_facets: ``list`` of ``str``
+        :param media: Whether to require that matching records have media attached. Defaults to no requirement
+        :type media: ``bool``
+        :param thumbnail: Whether to require that matching records have a thumbnail. Defaults to no requirement
+        :type thumbnail: ``bool``
+        :param reusability: The reusability (rights) to require. Defaults to no limits
+        :type reusability: ``str``
+        :param profile: The result profile to request. Defaults to ``'standard'``
+        :type profile: ``str``
+        """
+        self._api_key = api_key
+        self._query = query
+        self._max_records = max_records
+        self._cursor = '*'
+        self._offset = 0
+        self._query_facets = query_facets
+        self._media = media
+        self._thumbnail = thumbnail
+        self._reusability = reusability
+        self._profile = profile
         self.result_count = 0
         self.facets = None
         self._run_search()
 
     def __iter__(self):
-        """Return this :class:`~polymatheia.data.reader.EuropeanaSearchReader`` as the iterator."""
+        """Return this :class:`~polymatheia.data.reader.EuropeanaSearchIterator`` as the iterator."""
         return self
 
     def __next__(self):
@@ -269,20 +313,11 @@ class CSVReader(object):
         """
         if isinstance(source, str):
             self._file = open(source)
-            self._it = iter(DictReader(self._file))
         else:
-            self._file = None
-            self._it = iter(DictReader(source))
+            self._file = source
 
     def __iter__(self):
         """Return this :class:`~polymatheia.data.reader.CSVReader` as the iterator."""
-        return self
-
-    def __next__(self):
-        """Return the next CSV line as a :class:`~polymatheia.data.NavigableDict`."""
-        try:
-            return NavigableDict(next(self._it))
-        except StopIteration:
-            if self._file and not self._file.closed:
-                self._file.close()
-            raise StopIteration()
+        if self._file.seekable():
+            self._file.seek(0)
+        return NavigableDictIterator(iter(DictReader(self._file)))
