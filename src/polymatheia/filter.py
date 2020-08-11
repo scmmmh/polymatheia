@@ -88,7 +88,10 @@ class Filter(object):
         elif self._expression[0] == 'lte':
             return self._get_value(record, self._expression[1]) <= self._get_value(record, self._expression[2])
         elif self._expression[0] == 'contains':
-            return self._get_value(record, self._expression[2]) in self._get_value(record, self._expression[1])
+            try:
+                return self._get_value(record, self._expression[2]) in self._get_value(record, self._expression[1])
+            except TypeError:
+                return False
         elif self._expression[0] == 'not':
             return not self._expression[1](record)
         elif self._expression[0] == 'and':

@@ -146,3 +146,11 @@ def test_contains_filter():
     assert fltr(NavigableDict({'a': ['1', '2', '3']})) is True
     assert fltr(NavigableDict({'a': '2'})) is True
     assert fltr(NavigableDict({'a': [1, 2, 3]})) is False
+
+
+def test_contains_filter_missing():
+    """Test the contains filter."""
+    fltr = Filter(('contains', ['b'], '2'))
+    assert fltr(NavigableDict({'a': ['1', '2', '3']})) is False
+    assert fltr(NavigableDict({'a': '2'})) is False
+    assert fltr(NavigableDict({'a': [1, 2, 3]})) is False
