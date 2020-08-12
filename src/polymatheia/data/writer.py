@@ -107,13 +107,10 @@ class CSVWriter():
 class PandasDFWriter(object):
     """The :class:`~polymatheia.data.writer.PandasDFWriter` writes records to a Pandas :class:`~pandas.DataFrame`.
 
-    After calling the :meth:`~polymatheia.data.writer.PandasDFWriter.write` method, the dataframe is available via
-    :attr:`~polymatheia.data.writer.PandasDFWriter.df`.
-
     The :class:`~polymatheia.data.writer.PandasDFWriter` attempts to automatically coerce columns to integers or
     floats.
 
-    The :class:`~polymatheia.data.writer.CSVWriter` assumes that no record contains any kind of nested data. If
+    The :class:`~polymatheia.data.writer.PandasDFWriter` assumes that no record contains any kind of nested data. If
     it is passed nested data, then the behaviour is undefined.
     """
 
@@ -126,6 +123,8 @@ class PandasDFWriter(object):
 
         :param records: The records to write
         :type records: Iterable of :class:`~polymatheia.data.NavigableDict`
+        :return: The Pandas dataframe
+        :rtype: :class:`~pandas.DataFrame`
         """
         columns = {}
         for record in records:
@@ -141,4 +140,4 @@ class PandasDFWriter(object):
                     columns[key] = [float(v) for v in values]
                 except ValueError:
                     pass
-        self.df = DataFrame(columns)
+        return DataFrame(columns)
