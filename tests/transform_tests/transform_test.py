@@ -104,3 +104,55 @@ def test_dotted_target_transform():
     assert result.data.a == '1'
     assert result.data.b == '2'
     assert result.data.c == 'Test'
+
+
+def test_custom_transform():
+    """Test that a custom function can be used to transform data."""
+    record = NavigableDict({'a': {'_text': 'This is a test'}})
+    transform = Transform([('custom', 'length', lambda r: len(r.a._text.split()))])
+    result = transform(record)
+    assert result.length == 4
+
+
+def test_parallel_transform():
+    """Test that the parallel transform works as desired."""
+    record = NavigableDict({'a': {'one': {'_text': '1'}}, 'b': {'two': {'_text': '2'}}})
+    transform = Transform([('parallel', ('copy', 'data.a', 'a.one._text'),
+                                        ('copy', 'data.b', 'b.two._text'),
+                                        ('static', 'data.c', 'Test'))])
+    result = transform(record)
+    assert len(result) == 1
+    assert result.data.a == '1'
+    assert result.data.b == '2'
+    assert result.data.c == 'Test'
+
+
+def test_sequence_parallel():
+    """Test that the combination of parallel transform and sequence transform works."""
+    record = NavigableDict({'a': {'one': {'_text': '1'}}, 'b': {'two': {'_text': '2'}}})
+    transform = Transform([('sequence', ('parallel', ('combine', 'a', 'a.one._text', 'b.two._text'),
+                                                     ('static', 'b', 'Test')),
+                                        ('parallel', ('join', 'a', ', ', 'a'),
+                                                     ('copy', 'b', 'b')))])
+    result = transform(record)
+    assert len(result) == 2
+    assert result.a == '1, 2'
+    assert result.b == 'Test'
+
+
+def test_fill_empty():
+    """Test that filling ``None`` values works."""
+    record = NavigableDict({'a': {'one': {'_text': '1'}}})
+    transform = Transform([('sequence', ('copy', 'text', 'a.two._text'), ('fill', 'text', ''))])
+    result = transform(record)
+    assert len(result) == 1
+    assert result.text == ''
+
+
+def test_fill_no_overwrite():
+    """Test that filling ``None`` values works."""
+    record = NavigableDict({'a': {'two': {'_text': '1'}}})
+    transform = Transform([('sequence', ('copy', 'text', 'a.two._text'), ('fill', 'text', ''))])
+    result = transform(record)
+    assert len(result) == 1
+    assert result.text == '1'

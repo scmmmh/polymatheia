@@ -8,6 +8,8 @@ All transform classes use the following transform expression language and are de
   path ``target``.
 * Copy: ``('copy', target, source)``: The value specified by the dotted path ``source`` is stored at the location
   specified by the dotted path ``target``.
+* Fill: ``('fill', target, value)``: If the value specified by the dotted path ``target`` is ``None``, then this is
+  replaced by the ``value``, otherwise it is left untouched.
 * Split: ``('split', target, splitter, source): The value specified by the dotted path ``source`` is split and
   stored at the location specified by the dotted path ``target``. If the value is a ``list``, then the list is split
   into its elements. If the value is a ``str``, then it is split using ``splitter`. Because this will produce more
@@ -22,8 +24,13 @@ All transform classes use the following transform expression language and are de
   the ``list`` joined using ``joiner``. If multiple ``source``\ s are specified, then the values returned by each
   dotted ``source`` path are returned.
 * sequence: ``('sequence', expression1, expression2, ...)``: Applies the transform expressions in sequence. When using
-  the sequence transformation, this should be the only transformation being applied, otherwise the results cannot be
-  guaranteed.
+  the sequence transformation, this should be the only top-level transformation being applied, otherwise the results
+  cannot be guaranteed.
+* parallel: ``('multiple', expression1, expression2, ...)``: Applies the transform expressions in parallel. Only needed
+  if you want to convert multiple expressions in parallel inside a ``sequence`` transform. Parallel transforms **must**
+  not be mixed with other transforms at the same level.
+* custom: ``('custom', target, callable)``: Applies the custom transformation defined by the ``callable`` and stores
+  the result in ``target``.
 """
 from polymatheia.data import NavigableDict
 
@@ -41,6 +48,8 @@ class Transform(object):
         for mapping in mappings:
             if mapping[0] == 'sequence':
                 self._mappings.append(('sequence', *[Transform([m]) for m in mapping[1:]]))
+            elif mapping[0] == 'parallel':
+                self._mappings.append(('parallel', Transform(mapping[1:])))
             else:
                 self._mappings.append(mapping)
 
@@ -58,6 +67,11 @@ class Transform(object):
                 result.set(mapping[1], record.get(mapping[2]))
             elif mapping[0] == 'static':
                 result.set(mapping[1], mapping[2])
+            elif mapping[0] == 'fill':
+                if record.get(mapping[1]) is None:
+                    result.set(mapping[1], mapping[2])
+                else:
+                    result.set(mapping[1], record.get(mapping[1]))
             elif mapping[0] == 'split':
                 value = record.get(mapping[3])
                 if value:
@@ -81,6 +95,10 @@ class Transform(object):
                 for part in mapping[1:]:
                     result = part(tmp)
                     tmp = result
+            elif mapping[0] == 'parallel':
+                result = mapping[1](record)
+            elif mapping[0] == 'custom':
+                result.set(mapping[1], mapping[2](record))
         return result
 
 
