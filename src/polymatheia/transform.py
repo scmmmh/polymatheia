@@ -38,20 +38,21 @@ from polymatheia.data import NavigableDict
 class Transform(object):
     """The :class:`~polymatheia.transform.Transform` is a callable transformation for :class:`~polymatheia.data.NavigableDict`."""  # noqa: E501
 
-    def __init__(self, mappings):
+    def __init__(self, mapping):
         """Create a new :class:`~polymatheia.transform.Transform`.
 
-        :param mappings: The mappings that are applied when the :class:`~polymatheia.transform.Transform` is called
-        :type mappings: ``list``
+        :param mapping: The mappings that are applied when the :class:`~polymatheia.transform.Transform` is called. If a
+                        ``list`` is passed as the parameter, then this constructs an implicit ``'parallel'`` transform.
+        :type mapping: ``tuple`` or ``list``
         """
-        self._mappings = []
-        for mapping in mappings:
-            if mapping[0] == 'sequence':
-                self._mappings.append(('sequence', *[Transform([m]) for m in mapping[1:]]))
-            elif mapping[0] == 'parallel':
-                self._mappings.append(('parallel', Transform(mapping[1:])))
-            else:
-                self._mappings.append(mapping)
+        if isinstance(mapping, list):
+            mapping = ('parallel', *mapping)
+        if mapping[0] == 'sequence':
+            self._mapping = ('sequence', *[Transform(m) for m in mapping[1:]])
+        elif mapping[0] == 'parallel':
+            self._mapping = ('parallel', *[Transform(m) for m in mapping[1:]])
+        else:
+            self._mapping = mapping
 
     def __call__(self, record):
         """Transform the ``record`` according to the mappings of this :class:`~polymatheia.transform.Transform`.
@@ -62,43 +63,43 @@ class Transform(object):
         :rtype: :class:`~polymatheia.data.NavigableDict`
         """
         result = NavigableDict({})
-        for mapping in self._mappings:
-            if mapping[0] == 'copy':
-                result.set(mapping[1], record.get(mapping[2]))
-            elif mapping[0] == 'static':
-                result.set(mapping[1], mapping[2])
-            elif mapping[0] == 'fill':
-                if record.get(mapping[1]) is None:
-                    result.set(mapping[1], mapping[2])
-                else:
-                    result.set(mapping[1], record.get(mapping[1]))
-            elif mapping[0] == 'split':
-                value = record.get(mapping[3])
+        if self._mapping[0] == 'copy':
+            result.set(self._mapping[1], record.get(self._mapping[2]))
+        elif self._mapping[0] == 'static':
+            result.set(self._mapping[1], self._mapping[2])
+        elif self._mapping[0] == 'fill':
+            if record.get(self._mapping[1]) is None:
+                result.set(self._mapping[1], self._mapping[2])
+            else:
+                result.set(self._mapping[1], record.get(self._mapping[1]))
+        elif self._mapping[0] == 'split':
+            value = record.get(self._mapping[3])
+            if value:
+                if isinstance(value, str):
+                    for idx, part in enumerate(value.split(self._mapping[2])):
+                        result.set(self._mapping[1].format(idx + 1), part)
+                elif isinstance(value, list):
+                    for idx, part in enumerate(value):
+                        result.set(self._mapping[1].format(idx + 1), part)
+        elif self._mapping[0] == 'combine':
+            result.set(self._mapping[1], [record.get(path) for path in self._mapping[2:]])
+        elif self._mapping[0] == 'join':
+            if len(self._mapping) == 4:
+                value = record.get(self._mapping[3])
                 if value:
-                    if isinstance(value, str):
-                        for idx, part in enumerate(value.split(mapping[2])):
-                            result.set(mapping[1].format(idx + 1), part)
-                    elif isinstance(value, list):
-                        for idx, part in enumerate(value):
-                            result.set(mapping[1].format(idx + 1), part)
-            elif mapping[0] == 'combine':
-                result.set(mapping[1], [record.get(path) for path in mapping[2:]])
-            elif mapping[0] == 'join':
-                if len(mapping) == 4:
-                    value = record.get(mapping[3])
-                    if value:
-                        result.set(mapping[1], mapping[2].join(value))
-                else:
-                    result.set(mapping[1], mapping[2].join([record.get(path) for path in mapping[3:]]))
-            elif mapping[0] == 'sequence':
-                tmp = record
-                for part in mapping[1:]:
-                    result = part(tmp)
-                    tmp = result
-            elif mapping[0] == 'parallel':
-                result = mapping[1](record)
-            elif mapping[0] == 'custom':
-                result.set(mapping[1], mapping[2](record))
+                    result.set(self._mapping[1], self._mapping[2].join(value))
+            else:
+                result.set(self._mapping[1], self._mapping[2].join([record.get(path) for path in self._mapping[3:]]))
+        elif self._mapping[0] == 'sequence':
+            tmp = record
+            for part in self._mapping[1:]:
+                result = part(tmp)
+                tmp = result
+        elif self._mapping[0] == 'parallel':
+            for part in self._mapping[1:]:
+                result.merge(part(record))
+        elif self._mapping[0] == 'custom':
+            result.set(self._mapping[1], self._mapping[2](record))
         return result
 
 

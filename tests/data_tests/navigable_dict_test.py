@@ -135,3 +135,43 @@ def test_setting_dotted_path_nested_list_value():
     tmp = NavigableDict({'data': {'numbers': [{'a': 1}]}})
     tmp.set('data.numbers.0.a', 4)
     assert tmp.data.numbers[0].a == 4
+
+
+def test_merge_navigable_dict():
+    """Test that merging in a NavigableDict works."""
+    tmp = NavigableDict({'data': {'a': 1}})
+    tmp.merge(NavigableDict({'data': {'b': 2}, 'meta': 'Available'}))
+    assert len(tmp) == 2
+    assert len(tmp.data) == 2
+    assert tmp.data.a == 1
+    assert tmp.data.b == 2
+    assert tmp.meta == 'Available'
+
+
+def test_merge_dict():
+    """Test that merging in a dict is coerced correctly."""
+    tmp = NavigableDict({'data': {'a': 1}})
+    tmp.merge({'data': {'b': 2}, 'meta': 'Available'})
+    assert len(tmp) == 2
+    assert len(tmp.data) == 2
+    assert tmp.data.a == 1
+    assert tmp.data.b == 2
+    assert tmp.meta == 'Available'
+
+
+def test_merge_list():
+    """Test that merging two lists works correctly."""
+    tmp = NavigableDict({'data': {'a': [1, 2]}})
+    tmp.merge({'data': {'a': [3, 4, 5]}})
+    assert len(tmp) == 1
+    assert len(tmp.data) == 1
+    assert len(tmp.data.a) == 5
+
+
+def test_merge_overwrite():
+    """Test that in the case of a type mismatch, the values are overwritten."""
+    tmp = NavigableDict({'data': {'a': 1}})
+    tmp.merge({'data': 'None', 'meta': 'Available'})
+    assert len(tmp) == 2
+    assert tmp.data == 'None'
+    assert tmp.meta == 'Available'

@@ -16,7 +16,7 @@ def test_copy_transform():
 def test_static_transform():
     """Test the static transformation."""
     record = NavigableDict({'a': {'one': {'_text': '1'}}, 'b': {'two': {'_text': '2'}}})
-    transform = Transform([('static', 'a', 'Test')])
+    transform = Transform(('static', 'a', 'Test'))
     result = transform(record)
     assert len(result) == 1
     assert result.a == 'Test'
@@ -117,9 +117,9 @@ def test_custom_transform():
 def test_parallel_transform():
     """Test that the parallel transform works as desired."""
     record = NavigableDict({'a': {'one': {'_text': '1'}}, 'b': {'two': {'_text': '2'}}})
-    transform = Transform([('parallel', ('copy', 'data.a', 'a.one._text'),
-                                        ('copy', 'data.b', 'b.two._text'),
-                                        ('static', 'data.c', 'Test'))])
+    transform = Transform(('parallel', ('copy', 'data.a', 'a.one._text'),
+                                       ('copy', 'data.b', 'b.two._text'),
+                                       ('static', 'data.c', 'Test')))
     result = transform(record)
     assert len(result) == 1
     assert result.data.a == '1'
@@ -130,10 +130,10 @@ def test_parallel_transform():
 def test_sequence_parallel():
     """Test that the combination of parallel transform and sequence transform works."""
     record = NavigableDict({'a': {'one': {'_text': '1'}}, 'b': {'two': {'_text': '2'}}})
-    transform = Transform([('sequence', ('parallel', ('combine', 'a', 'a.one._text', 'b.two._text'),
-                                                     ('static', 'b', 'Test')),
-                                        ('parallel', ('join', 'a', ', ', 'a'),
-                                                     ('copy', 'b', 'b')))])
+    transform = Transform(('sequence', ('parallel', ('combine', 'a', 'a.one._text', 'b.two._text'),
+                                                    ('static', 'b', 'Test')),
+                                       ('parallel', ('join', 'a', ', ', 'a'),
+                                                    ('copy', 'b', 'b'))))
     result = transform(record)
     assert len(result) == 2
     assert result.a == '1, 2'

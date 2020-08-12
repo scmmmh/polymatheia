@@ -155,6 +155,29 @@ class NavigableDict(dict):
                         tmp[element] = NavigableDict({})
                     tmp = tmp[element]
 
+    def merge(self, other):
+        """Merge the ``other`` values.
+
+        Unlike the :method:`~polymatheia.data.NavigableDict.update` method, this method does not immediately overwrite
+        any existing values. Instead if both the new and existing value are :class:`~polymatheia.data.NavigableDict`,
+        then the values from the ``other`` :class:`~polymatheia.data.NavigableDict` are merged into the existing
+        :class:`~polymatheia.data.NavigableDict`. Similarly, if both the new and existing value are ``list``, then
+        the new existing list is extended with the new list. If neither of these conditions hold, then the existing
+        value is overwritten by the new value.
+        """
+        if isinstance(other, dict) and not isinstance(other, NavigableDict):
+            other = NavigableDict(other)
+        for key, value in other.items():
+            if key in self:
+                if isinstance(self[key], NavigableDict) and isinstance(value, NavigableDict):
+                    self[key].merge(value)
+                elif isinstance(self[key], list) and isinstance(value, list):
+                    self[key].extend(value)
+                else:
+                    setattr(self, key, value)
+            else:
+                setattr(self, key, value)
+
     def _split_path(self, path):
         """Split the ``path`` into a ``tuple``.
 
