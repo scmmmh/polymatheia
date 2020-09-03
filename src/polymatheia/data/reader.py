@@ -296,7 +296,8 @@ class EuropeanaSearchIterator(object):
             self._it = iter(data['items'])
             self.result_count = data['totalResults']
             self._offset = self._offset + data['itemsCount']
-            self._cursor = data['nextCursor']
+            if 'nextCursor' in data:
+                self._cursor = data['nextCursor']
             if 'facets' in data:
                 self.facets = [NavigableDict(facet) for facet in data['facets']]
         else:

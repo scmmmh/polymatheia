@@ -139,7 +139,7 @@ def test_cursor_search():
     count = 0
     for _ in reader:
         count = count + 1
-    assert count == 1009
+    assert count == 1023
 
 
 def test_invalid_api_key():
@@ -153,3 +153,9 @@ def test_europeana_iterator():
     reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Python', reusability='open')
     it = iter(reader)
     assert it == iter(it)
+
+
+def test_no_results():
+    """Test that a query that returns nothing works."""
+    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'blablablablblblablbblblalbalb', reusability='open')
+    assert len(list(iter(reader))) == 0
