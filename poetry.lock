@@ -1229,6 +1229,9 @@ sphinxcontrib-qthelp = [
 sphinxcontrib-serializinghtml = [
     {file = "sphinxcontrib-serializinghtml-1.1.4.tar.gz", hash = "sha256:eaa0eccc86e982a9b939b2b82d12cc5d013385ba5eadcc7e4fed23f4405f77bc"},
     {file = "sphinxcontrib_serializinghtml-1.1.4-py2.py3-none-any.whl", hash = "sha256:f242a81d423f59617a8e5cf16f5d4d74e28ee9a66f9e5b637a18082991db5a9a"},
+srupy = [
+    {file = "srupy-0.0.42-py3-none-any.whl", hash = "sha256:a56e9c140cb9eab79fca019415d59a45aea0f2133972ebf896a00b89d8be8d03"},
+    {file = "srupy-0.0.42.tar.gz", hash = "sha256:ba5c0fc973f595ba7b33531c790c78afdd89e823311bddd9aa85ab1d4369d3dc"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},
