@@ -388,6 +388,7 @@ class SRURecordReader(object):
         :param as_navigable_dict: Whether the records will be returned as they come from the SRU server (usually XML)
         or as an instance of :class:`~polymatheia.data.NavigableDictIterator` (default)
         :type as_navigable_dict: ``boolean``
+        :type plain: ``boolean``
         :param kwargs: Requests parameters that will be sent to the SRU server
         """
         self._url = url
