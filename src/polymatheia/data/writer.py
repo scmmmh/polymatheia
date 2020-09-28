@@ -1,9 +1,11 @@
 """This module provides a writer for serialising data to the local filesystem."""
 import json
 import os
+import re
 
 from csv import DictWriter
 from hashlib import sha256
+from lxml import etree
 from pandas import DataFrame
 
 
@@ -45,6 +47,94 @@ class LocalWriter():
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(f'{file_path}.json', 'w') as out_f:
                     json.dump(record, out_f)
+
+
+class XMLWriter():
+    """The :class:`~polymatheia.data.writer.XMLWriter` writes records to the local filesystem as XML."""
+
+    def __init__(self, directory, id_path):
+        """Create a new :class:`~polymatheia.data.writer.XMLWriter`.
+
+        For each record the identifier is used to create a directory structure. In the leaf directory the identifier
+        is then used as the filename.
+
+        :param directory: The base directory within which to create the files
+        :type directory: ``str``
+        :param id_path: The path used to access the identifier in the record
+        :type id_path: ``str`` or ``list``
+        """
+        self._directory = directory
+        if isinstance(id_path, str):
+            self._id_path = id_path.split('.')
+        else:
+            self._id_path = id_path
+
+    def write(self, records):
+        """Write the records to the file-system.
+
+        :param records: The records to write
+        :type records: Iterable of :class:`~polymatheia.data.NavigableDict`
+        """
+        for record in records:
+            identifier = record.get(self._id_path)
+            if identifier:
+                hash = sha256(identifier.encode('utf-8'))
+                hex = hash.hexdigest()
+                file_path = os.path.join(
+                    self._directory,
+                    *[hex[idx:idx+4] for idx in range(0, len(hex), 4)],
+                    hex)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(f'{file_path}.xml', 'wb') as out_f:
+                    root = etree.Element('record')
+                    self._build_xml_doc(root, record)
+                    out_f.write(etree.tostring(root))
+
+    def _build_xml_doc(self, parent, data):
+        """Build the XML document tree.
+
+        Tag names are generated from the keys in the ``data``, ensuring that they are valid XML tag names.
+
+        Handles nested ``data`` trees by nesting elements and lists by generating the same tag repeatedly.
+
+        :param parent: The parent node to attach elements to
+        :type parent: :class:`~lxml.etree.Element`
+        :param data: The data to build the tree from
+        :type data: :class:`~polymatheia.data.NavigableDict`
+        """
+        for key, value in data.items():
+            if isinstance(value, list):
+                for sub_value in value:
+                    element = etree.Element(self._valid_xml_tag(key))
+                    if isinstance(sub_value, dict):
+                        self._build_xml_doc(element, sub_value)
+                    else:
+                        element.text = str(value)
+                    parent.append(element)
+            elif isinstance(value, dict):
+                element = etree.Element(self._valid_xml_tag(key))
+                self._build_xml_doc(element, value)
+                parent.append(element)
+            else:
+                element = etree.Element(self._valid_xml_tag(key))
+                element.text = str(value)
+                parent.append(element)
+
+    def _valid_xml_tag(self, tag):
+        """Generate a valid XML tag for the given ``tag``.
+
+        :param tag: The tag to generate a valid XML tag for
+        :type tag: ``str``
+        :return: A valid XML tag
+        :rtype: ``str``
+        """
+        tag = re.sub(r'\s+', '-', tag)
+        tag = ''.join(re.findall(r'\w|\d|-|_|\.', tag))
+        while not re.match(r'\w', tag) or re.match(r'\d', tag):
+            tag = tag[1:]
+        if tag.lower().startswith('xml'):
+            tag = tag[3:]
+        return tag
 
 
 class CSVWriter():
