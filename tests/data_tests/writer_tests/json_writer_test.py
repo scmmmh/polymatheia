@@ -2,11 +2,10 @@
 import json
 import os
 
-from deprecation import fail_if_not_removed
 from shutil import rmtree
 
 from polymatheia.data import NavigableDict
-from polymatheia.data.writer import LocalWriter
+from polymatheia.data.writer import JSONWriter
 
 
 DOCUMENTS = [NavigableDict(r) for r in [
@@ -38,11 +37,10 @@ DOCUMENTS = [NavigableDict(r) for r in [
 ]]
 
 
-@fail_if_not_removed
-def test_local_writing():
+def test_local_json_writing():
     """Test writing to the local filesystem."""
-    rmtree('tmp/local_writer_test', ignore_errors=True)
-    writer = LocalWriter('tmp/local_writer_test', 'header.identifier._text')
+    rmtree('tmp/json_writer_test', ignore_errors=True)
+    writer = JSONWriter('tmp/json_writer_test', 'id')
     writer.write(DOCUMENTS)
     count = 0
     for basepath, _, filenames in os.walk('tmp/json_writer_test'):
@@ -65,11 +63,10 @@ def test_local_writing():
     assert count == 3
 
 
-@fail_if_not_removed
-def test_local_writing_pre_split_id_path():
+def test_local_json_writing_pre_split_id_path():
     """Test writing to the local filesystem."""
-    rmtree('tmp/local_writer_test', ignore_errors=True)
-    writer = LocalWriter('tmp/local_writer_test', ['header', 'identifier', '_text'])
+    rmtree('tmp/json_writer_test', ignore_errors=True)
+    writer = JSONWriter('tmp/json_writer_test', ['id'])
     writer.write(DOCUMENTS)
     count = 0
     for basepath, _, filenames in os.walk('tmp/json_writer_test'):
