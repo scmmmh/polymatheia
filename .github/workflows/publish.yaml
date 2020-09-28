@@ -1,0 +1,34 @@
+name: Publish on PyPi
+
+on:
+  push:
+    branches: [ default ]
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add Path Entries
+      run: |
+        echo "::add-path::$HOME/.local/bin"
+        
+    - name: Install Base Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install python3-venv pipx
+        pipx install poetry
+    
+    - name: Install Python Dependencies
+      run: |
+        poetry config virtualenvs.in-project true
+        poetry install
+        
+    - name: Publish
+      run: |
+        poetry build
+        poetry publish --username __token__ --password ${{ secrets.PYPI_TOKEN }}
