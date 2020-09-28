@@ -139,6 +139,36 @@ class LocalReader(object):
             raise StopIteration()
 
 
+class XMLReader():
+    """The :class:`~polymatheia.data.reader.XMLReader` is a container for reading XML files from the local filesystem.
+
+    The :class:`~polymatheia.data.reader.XMLReader` will only load files that have a ".xml" extension.
+    """
+
+    def __init__(self, directory):
+        """Create a new :class:`~polymatheia.data.reader.XMLReader`.
+
+        :param directory: The base directory within which to load the files
+        :type directory: ``str``
+        """
+        self._directory = directory
+        self._filelist = []
+        for basepath, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if filename.endswith('.xml'):
+                    self._filelist.append(os.path.join(basepath, filename))
+
+    def __iter__(self):
+        """Return a new :class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(iter(self._filelist),
+                                     mapper=self._load)
+
+    def _load(self, filename):
+        """Return the next file as a :class:`~polymatheia.data.NavigableDict`."""
+        with open(filename) as in_f:
+            return xml_to_navigable_dict(etree.parse(in_f, parser=etree.XMLParser(remove_comments=True)).getroot())
+
+
 class EuropeanaSearchReader(object):
     """The :class:`~polymatheia.data.reader.EuropeanaSearchReader` provides access to the Europeana Search API.
 

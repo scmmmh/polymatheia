@@ -139,7 +139,7 @@ def test_cursor_search():
     count = 0
     for _ in reader:
         count = count + 1
-    assert count == 1023
+    assert count > 1000
 
 
 def test_invalid_api_key():
