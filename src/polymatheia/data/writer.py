@@ -163,7 +163,7 @@ class CSVWriter():
                               column name
         :param extras_action: The action to take if a record contains keys that are not in the CVS fieldnames. Set to
                               ``'ignore'`` to just ignore this (the default). Set to ``'raise'`` to raise a
-                              ``ValueError`.
+                              ``ValueError``.
         :type extras_action: ``str``
         :param fieldnames: The CSV column names to use. If ``None`` is specified, then the column names are derived
                            from the first record's keys.
