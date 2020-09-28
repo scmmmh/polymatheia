@@ -4,16 +4,19 @@ import os
 import re
 
 from csv import DictWriter
+from deprecation import deprecated
 from hashlib import sha256
 from lxml import etree
 from pandas import DataFrame
 
+from polymatheia import __version__
 
-class LocalWriter():
-    """The :class:`~polymatheia.data.writer.LocalWriter` writes records to the local filesystem."""
+
+class JSONWriter():
+    """The :class:`~polymatheia.data.writer.JSONWriter` writes records to the local filesystem as JSON files."""
 
     def __init__(self, directory, id_path):
-        """Create a new :class:`~polymatheia.data.writer.LocalWriter`.
+        """Create a new :class:`~polymatheia.data.writer.JSONWriter`.
 
         For each record the identifier is used to create a directory structure. In the leaf directory the identifier
         is then used as the filename.
@@ -47,6 +50,14 @@ class LocalWriter():
                 os.makedirs(os.path.dirname(file_path), exist_ok=True)
                 with open(f'{file_path}.json', 'w') as out_f:
                     json.dump(record, out_f)
+
+
+@deprecated(deprecated_in='0.2.0', removed_in='1.0.0', current_version=__version__,
+            details='Replaced by the polymatheia.data.writer.JSONWriter')
+class LocalWriter(JSONWriter):
+    """Deprecated. Use :class:`~polymatheia.data.writer.JSONWriter`."""
+
+    pass
 
 
 class XMLWriter():
