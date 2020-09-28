@@ -13,6 +13,7 @@ lxml = "^4.5.2"
 requests = "^2.24.0"
 pandas = "^1.1.0"
 srupy = "^0.0.42"
+deprecation = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"

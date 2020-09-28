@@ -6,11 +6,13 @@ import json
 import os
 
 from csv import DictReader
+from deprecation import deprecated
 from lxml import etree
 from requests import get
 from sickle import Sickle
 from srupy import SRUpy
 
+from polymatheia import __version__
 from polymatheia.data import NavigableDict, NavigableDictIterator, LimitingIterator, xml_to_navigable_dict
 
 
@@ -97,10 +99,10 @@ class OAIRecordReader(object):
         return it
 
 
-class LocalReader(object):
-    """The :class:`~polymatheia.data.reader.LocalReader` is a container for reading from the local filesystem.
+class JSONReader():
+    """The :class:`~polymatheia.data.reader.JSONReader` is a container for reading JSON files from the filesystem.
 
-    It is designed to provide access to data serialised using the :class:`~polymatheia.data.writer.LocalWriter`.
+    It is designed to provide access to data serialised using the :class:`~polymatheia.data.writer.JSONWriter`.
 
     .. important::
 
@@ -109,7 +111,7 @@ class LocalReader(object):
     """
 
     def __init__(self, directory):
-        """Create a new :class:`~polymatheia.data.reader.LocalReader`.
+        """Create a new :class:`~polymatheia.data.reader.JSONReader`.
 
         :param directory: The base directory within which to load the files
         :type directory: ``str``
@@ -127,17 +129,17 @@ class LocalReader(object):
                                      mapper=self._load)
 
     def _load(self, filename):
-        """Return the next file as a :class:`~polymatheia.data.NavigableDict`.
+        """Return the next file as a :class:`~polymatheia.data.NavigableDict`."""
+        with open(filename) as in_f:
+            return json.load(in_f)
 
-        :raises StopIteration: If the file cannot be read or is not a valid JSON file
-        """
-        try:
-            with open(filename) as in_f:
-                return json.load(in_f)
-        except FileNotFoundError:
-            raise StopIteration()
-        except json.JSONDecodeError:
-            raise StopIteration()
+
+@deprecated(deprecated_in='0.2.0', removed_in='1.0.0', current_version=__version__,
+            details='Replaced by the polymatheia.data.reader.JSONReader')
+class LocalReader(JSONReader):
+    """Deprecated. Use :class:`~polymatheia.data.reader.JSONReader`."""
+
+    pass
 
 
 class XMLReader():
