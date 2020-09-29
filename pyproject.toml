@@ -27,5 +27,5 @@ tox-pyenv = "^1.1.0"
 sphinx = "^3.2.1"
 
 [build-system]
-requires = ["poetry>=0.12", "rtd-poetry"]
+requires = ["poetry>=0.12", "rtd-poetry-tmp"]
 build-backend = "rtd_poetry"
