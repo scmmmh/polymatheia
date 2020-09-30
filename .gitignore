@@ -7,3 +7,4 @@ tmp
 .python-version
 dist
 .idea
+.vscode

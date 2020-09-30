@@ -1,4 +1,4 @@
-"""The classes in the :mod:`~polymatheia.data` package handle data input and output."""
+"""The classes in the :mod:`polymatheia.data` package handle data input and output."""
 import json
 
 from polymatheia.util import namespace_mapping
@@ -158,7 +158,7 @@ class NavigableDict(dict):
     def merge(self, other):
         """Merge the ``other`` values.
 
-        Unlike the :method:`~polymatheia.data.NavigableDict.update` method, this method does not immediately overwrite
+        Unlike the :meth:`~polymatheia.data.NavigableDict.update` method, this method does not immediately overwrite
         any existing values. Instead if both the new and existing value are :class:`~polymatheia.data.NavigableDict`,
         then the values from the ``other`` :class:`~polymatheia.data.NavigableDict` are merged into the existing
         :class:`~polymatheia.data.NavigableDict`. Similarly, if both the new and existing value are ``list``, then
@@ -285,7 +285,7 @@ def xml_to_navigable_dict(node):
     ``_text`` key and any text that directly follows the ``node`` is available via the ``_tail`` key.
 
     :param node: The XML node to convert
-    :type node: ``~lxml.etree.Element`
+    :type node: :class:`~lxml.etree.Element`
     :return: The dictionary representation of the XML node
     :rtype: :class:`~polymatheia.data.NavigableDict`
     """
