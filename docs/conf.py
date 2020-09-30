@@ -32,6 +32,7 @@ release = '0.2.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
     'sphinx_rtd_theme',
 ]
 
@@ -60,5 +61,11 @@ html_show_sourcelink = False
 
 html_theme_options = {
     'collapse_navigation': False,
-    'titles_only': True,
+    'titles_only': False,
+}
+
+# -- Intersphinx configuration -----------------------------------------------
+
+intersphinx_mapping = {
+    'pandas': ('https://pandas.pydata.org/docs/', None)
 }

@@ -23,10 +23,15 @@ tasks and analysis.
 | *Package*: https://pypi.org/project/polymatheia
 | *License*: MIT
 
+A tutorial covering the major aspects of Polymatheia, including some basic analysis and visualisation aspects can be
+found here: https://github.com/mmh352/metadata-tutorial
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   concepts
+   recipes/index
    api/index
 
 
