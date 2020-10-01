@@ -368,10 +368,15 @@ class SRUExplainRecordReader(object):
         """
         self._url = url
         self._explain = SRUpy(self._url).explain()
-        self.data = NavigableDict(self._explain)
         self.schemas = [(schema["@name"], schema.title)
-                        for schema in self.data.explain.schemaInfo.schema]
+                        for schema in NavigableDict(self._explain).explain.schemaInfo.schema]
         self.echo = NavigableDict(self._explain.echo)
+
+    def __iter__(self):
+        """Return this :class:`~polymatheia.data.reader.SRUExplainRecordReader`` as the iterator."""
+        return NavigableDictIterator(iter(self._explain),
+                                     mapper=lambda record: {record[0]: record[1]}
+                                     )
 
 
 class SRURecordReader(object):
@@ -380,32 +385,26 @@ class SRURecordReader(object):
     The underlying library (SRUpy) automatically handles the continuation parameters, allowing for simple iteration.
     """
 
-    def __init__(self, url, as_navigable_dict=True, **kwargs):
+    def __init__(self, url, **kwargs):
         """Construct a new :class:`~polymatheia.data.reader.SRURecordReader`.
 
         :param url: The base URL of the SRU endpoint
         :type url: ``str``
-        :param as_navigable_dict: Whether the records will be returned as they come from the SRU server (usually XML)
-        or as an instance of :class:`~polymatheia.data.NavigableDictIterator` (default)
-        :type as_navigable_dict: ``boolean``
         :type plain: ``boolean``
         :param kwargs: Requests parameters that will be sent to the SRU server
         """
         self._url = url
-        self._as_navigable_dict = as_navigable_dict
         self._kwargs = kwargs
         self._records = SRUpy(self._url).get_records(**self._kwargs)
         self.number_of_records = self._records.number_of_records
         self.echo = NavigableDict(self._records.echo)
 
     def __iter__(self):
-        if not self._as_navigable_dict:
-            return SRUpy(self._url).get_records(**self._kwargs)
-        else:
-            return NavigableDictIterator(SRUpy(self._url).get_records(**self._kwargs),
-                                         mapper=lambda record: xml_to_navigable_dict(
-                                             etree.fromstring(
-                                                 record.raw,
-                                                 parser=etree.XMLParser(remove_comments=True)
-                                             )
-                                         ))
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(SRUpy(self._url).get_records(**self._kwargs),
+                                     mapper=lambda record: xml_to_navigable_dict(
+                                         etree.fromstring(
+                                             record.raw,
+                                             parser=etree.XMLParser(remove_comments=True)
+                                         )
+                                     ))
