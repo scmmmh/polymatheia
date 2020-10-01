@@ -11,8 +11,9 @@ RECORD_SCHEMA = "mods"
 def test_read_explain_record():
     """Test that getting and reading a SRU Explain record works."""
     reader = SRUExplainRecordReader(SRU_API)
-    assert reader.data.explain.serverInfo["@protocol"] == "SRU"
-    assert reader.data.explain.databaseInfo.contact == "gbv@gbv.de"
+    for item in reader:
+        assert item.explain.serverInfo["@protocol"] == "SRU"
+        assert item.explain.databaseInfo.contact == "gbv@gbv.de"
     assert reader.schemas is not None
     assert reader.echo is not None
     assert type(reader.echo) == NavigableDict
@@ -34,7 +35,6 @@ def test_sru_record_reader():
 
 def test_sru_record_reader_iteration():
     """Test that SRURecordReader iterates correctly."""
-    # (1) return NavigableDictIterator
     reader = SRURecordReader(SRU_API,
                              query=QUERY,
                              maximumRecords=MAXIMUM_RECORDS,
@@ -44,17 +44,6 @@ def test_sru_record_reader_iteration():
     for item in reader:
         assert type(item) is NavigableDict
         assert item.zs_recordSchema._text == RECORD_SCHEMA
-        break
-
-    # (2) do not return NavigableDictIterator
-    reader = SRURecordReader(SRU_API,
-                             as_navigable_dict=False,  # !
-                             query=QUERY,
-                             maximumRecords=MAXIMUM_RECORDS,
-                             recordSchema=RECORD_SCHEMA
-                             )
-    for item in reader:
-        assert type(item) is not NavigableDict
         break
 
 
