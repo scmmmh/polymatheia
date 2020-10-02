@@ -385,26 +385,50 @@ class SRURecordReader(object):
     The underlying library (SRUpy) automatically handles the continuation parameters, allowing for simple iteration.
     """
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, query, max_records, record_schema="dc", **kwargs):
         """Construct a new :class:`~polymatheia.data.reader.SRURecordReader`.
 
         :param url: The base URL of the SRU endpoint
         :type url: ``str``
-        :type plain: ``boolean``
-        :param kwargs: Requests parameters that will be sent to the SRU server
+        :param query: The query string
+        :type query: ``str``
+        :param max_records: The maximum number of records to return
+        :type max_records: ``int``
+        :param record_schema: Schema in which records will be returned. Defaults to Dublin Core schema.
+        :type record_schema: ``str``
+        :param kwargs: Additional request parameters that will be sent to the SRU server
         """
         self._url = url
+        self._query = query
+        self._max_records = max_records
+        self._record_schema = record_schema
         self._kwargs = kwargs
-        self._records = SRUpy(self._url).get_records(**self._kwargs)
-        self.number_of_records = self._records.number_of_records
-        self.echo = NavigableDict(self._records.echo)
+        self.record_count = None
+        self.echo = None
 
     def __iter__(self):
         """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
-        return NavigableDictIterator(SRUpy(self._url).get_records(**self._kwargs),
+        sru_records = SRUpy(self._url).get_records(query=self._query,
+                                                   maximumRecords=self._max_records,
+                                                   recordSchema=self._record_schema,
+                                                   **self._kwargs)
+        self.record_count = sru_records.number_of_records
+        self.echo = NavigableDict(sru_records.echo)
+        return NavigableDictIterator(sru_records,
                                      mapper=lambda record: xml_to_navigable_dict(
                                          etree.fromstring(
                                              record.raw,
                                              parser=etree.XMLParser(remove_comments=True)
                                          )
                                      ))
+
+    @staticmethod
+    def get_result_count(url, query):
+        """Return result count for the given query.
+
+        :param url: The base URL of the SRU endpoint
+        :type url: ``str``
+        :param query: The query string
+        :type query: ``str``
+        """
+        return SRUpy(url).get_records(query=query, maximumRecords=1).number_of_records
