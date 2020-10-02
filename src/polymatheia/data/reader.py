@@ -423,7 +423,7 @@ class SRURecordReader(object):
                                      ))
 
     @staticmethod
-    def get_result_count(url, query):
+    def result_count(url, query):
         """Return result count for the given query.
 
         :param url: The base URL of the SRU endpoint

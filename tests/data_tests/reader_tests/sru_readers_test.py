@@ -22,7 +22,7 @@ def test_read_explain_record():
 
 def test_sru_record_reader():
     """Test that SRURecordReader works."""
-    assert SRURecordReader.get_result_count(URL, QUERY) > 0
+    assert SRURecordReader.result_count(URL, QUERY) > 0
     reader = SRURecordReader(URL,
                              query=QUERY,
                              max_records=MAX_RECORDS,
@@ -80,4 +80,4 @@ def test_sru_records_no_results():
     """Test correct behaviour when no SRU records are found."""
     reader = SRURecordReader(URL, query="blablabla?!//!§$923", max_records=MAX_RECORDS)
     assert len(list(iter(reader))) == 0
-    assert SRURecordReader.get_result_count(URL, query="blablabla?!//!§$923") == 0
+    assert SRURecordReader.result_count(URL, query="blablabla?!//!§$923") == 0
