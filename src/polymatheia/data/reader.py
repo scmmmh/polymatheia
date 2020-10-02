@@ -373,7 +373,7 @@ class SRUExplainRecordReader(object):
         self.echo = NavigableDict(self._explain.echo)
 
     def __iter__(self):
-        """Return this :class:`~polymatheia.data.reader.SRUExplainRecordReader`` as the iterator."""
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
         return NavigableDictIterator(iter(self._explain),
                                      mapper=lambda record: {record[0]: record[1]}
                                      )
@@ -385,7 +385,7 @@ class SRURecordReader(object):
     The underlying library (SRUpy) automatically handles the continuation parameters, allowing for simple iteration.
     """
 
-    def __init__(self, url, query, max_records, record_schema="dc", **kwargs):
+    def __init__(self, url, query, max_records=None, record_schema="dc", **kwargs):
         """Construct a new :class:`~polymatheia.data.reader.SRURecordReader`.
 
         :param url: The base URL of the SRU endpoint
@@ -413,7 +413,8 @@ class SRURecordReader(object):
                                                    recordSchema=self._record_schema,
                                                    **self._kwargs)
         self.record_count = sru_records.number_of_records
-        self.echo = NavigableDict(sru_records.echo)
+        if sru_records.echo:
+            self.echo = NavigableDict(sru_records.echo)
         return NavigableDictIterator(sru_records,
                                      mapper=lambda record: xml_to_navigable_dict(
                                          etree.fromstring(
