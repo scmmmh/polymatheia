@@ -32,7 +32,7 @@ Fetching records
 ----------------
 
 Use the class :class:`~polymatheia.data.reader.SRURecordReader` to query an SRU server.
-Provide a parameter ``maximumRecords`` that specifies the desired number of records to return:
+Provide a parameter ``max_records`` that specifies the desired number of records to return:
 
 .. sourcecode:: python
 
@@ -40,7 +40,7 @@ Provide a parameter ``maximumRecords`` that specifies the desired number of reco
 
     reader = SRURecordReader("http://sru.k10plus.de/gvk",
                              query="dog cat mouse",
-                             maximumRecords=10)
+                             max_records=10)
     for record in reader:
         print(record)
 
@@ -52,24 +52,32 @@ Provide a parameter ``maximumRecords`` that specifies the desired number of reco
 Getting the total number of records for a query
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-The attribute ``number_of_records`` of :class:`~polymatheia.data.reader.SRURecordReader`
-returns the number of records that match the query. Checking this value in advance allows to
-specify the ``maximumRecords`` as necessary:
+The function ``record_count`` of :class:`~polymatheia.data.reader.SRURecordReader`
+returns the number of records that match the given query. Checking this value in advance allows to
+specify the ``max_records`` as necessary. After starting iterating over an
+:class:`~polymatheia.data.reader.SRURecordReader`, the result count is also available as a
+class attribute:
 
 .. sourcecode:: python
 
     from polymatheia.data.reader import SRURecordReader
 
+    result_count = SRURecordReader.result_count("http://sru.k10plus.de/gvk",
+                                                query="dog cat mouse")
+    print(result_count)
+
     reader = SRURecordReader("http://sru.k10plus.de/gvk",
                              query="dog cat mouse",
-                             maximumRecords=10)
-    print(reader.number_of_records)
+                             max_records=result_count)  # to retrieve all records
+    for record in reader:
+        print(reader.result_count)
+        break
 
 
 Selecting a recordSchema
 ++++++++++++++++++++++++
 
-Passing the parameter ``recordSchema``, i.e. a metadata format, to the :class:`~polymatheia.data.reader.SRURecordReader` returns all
+Passing the parameter ``record_schema``, i.e. a metadata format, to the :class:`~polymatheia.data.reader.SRURecordReader` returns all
 records in this format:
 
 .. sourcecode:: python
@@ -78,8 +86,8 @@ records in this format:
 
     reader = SRURecordReader("http://sru.k10plus.de/gvk",
                              query="dog cat mouse",
-                             maximumRecords=10,
-                             recordSchema="mods"
+                             max_records=10,
+                             record_schema="mods"
                              )
     for record in reader:
         print(record)
@@ -96,7 +104,7 @@ Getting the echoed request
 ++++++++++++++++++++++++++
 
 The ``echo`` attribute of :class:`~polymatheia.data.reader.SRURecordReader`
-echoes the request parameters back to the client:
+echoes the request parameters back to the client. It is available after starting the iteration:
 
 .. sourcecode:: python
 
@@ -104,5 +112,7 @@ echoes the request parameters back to the client:
 
     reader = SRURecordReader("http://sru.k10plus.de/gvk",
                              query="dog cat mouse",
-                             maximumRecords=10)
-    print(reader.echo)
+                             max_records=10)
+    for record in reader:
+        print(reader.echo)
+        break
