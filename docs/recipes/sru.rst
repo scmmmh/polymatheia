@@ -52,7 +52,7 @@ Provide a parameter ``max_records`` that specifies the desired number of records
 Getting the total number of records for a query
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-The function ``record_count`` of :class:`~polymatheia.data.reader.SRURecordReader`
+The function ``result_count`` of :class:`~polymatheia.data.reader.SRURecordReader`
 returns the number of records that match the given query. Checking this value in advance allows to
 specify the ``max_records`` as necessary. After starting iterating over an
 :class:`~polymatheia.data.reader.SRURecordReader`, the result count is also available as a
