@@ -6,4 +6,5 @@ __pycache__
 tmp
 .python-version
 dist
+.idea
 .vscode

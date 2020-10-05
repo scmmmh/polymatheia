@@ -10,6 +10,7 @@ from deprecation import deprecated
 from lxml import etree
 from requests import get
 from sickle import Sickle
+from srupy import SRUpy
 
 from polymatheia import __version__
 from polymatheia.data import NavigableDict, NavigableDictIterator, LimitingIterator, xml_to_navigable_dict
@@ -354,3 +355,81 @@ class CSVReader(object):
         if self._file.seekable():
             self._file.seek(0)
         return NavigableDictIterator(iter(DictReader(self._file)))
+
+
+class SRUExplainRecordReader(object):
+    """The class:`~polymatheia.data.reader.SRUExplainRecordReader` is a container for SRU Explain Records."""
+
+    def __init__(self, url):
+        """Construct a new class:`~polymatheia.data.reader.SRUExplainRecordReader`.
+
+        :param url: The base URL of the SRU server
+        :type url: ``str``
+        """
+        self._url = url
+        self._explain = SRUpy(self._url).explain()
+        self.schemas = [(schema["@name"], schema.title)
+                        for schema in NavigableDict(self._explain).explain.schemaInfo.schema]
+        self.echo = NavigableDict(self._explain.echo)
+
+    def __iter__(self):
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        return NavigableDictIterator(iter(self._explain),
+                                     mapper=lambda record: {record[0]: record[1]}
+                                     )
+
+
+class SRURecordReader(object):
+    """The :class:`~polymatheia.data.reader.SRURecordReader` is an iteration container for Records fetched via SRU.
+
+    The underlying library (SRUpy) automatically handles the continuation parameters, allowing for simple iteration.
+    """
+
+    def __init__(self, url, query, max_records=None, record_schema="dc", **kwargs):
+        """Construct a new :class:`~polymatheia.data.reader.SRURecordReader`.
+
+        :param url: The base URL of the SRU endpoint
+        :type url: ``str``
+        :param query: The query string
+        :type query: ``str``
+        :param max_records: The maximum number of records to return
+        :type max_records: ``int``
+        :param record_schema: Schema in which records will be returned. Defaults to Dublin Core schema.
+        :type record_schema: ``str``
+        :param kwargs: Additional request parameters that will be sent to the SRU server
+        """
+        self._url = url
+        self._query = query
+        self._max_records = max_records
+        self._record_schema = record_schema
+        self._kwargs = kwargs
+        self.record_count = None
+        self.echo = None
+
+    def __iter__(self):
+        """Return a new class:`~polymatheia.data.NavigableDictIterator` as the iterator."""
+        sru_records = SRUpy(self._url).get_records(query=self._query,
+                                                   maximumRecords=self._max_records,
+                                                   recordSchema=self._record_schema,
+                                                   **self._kwargs)
+        self.record_count = sru_records.number_of_records
+        if sru_records.echo:
+            self.echo = NavigableDict(sru_records.echo)
+        return NavigableDictIterator(sru_records,
+                                     mapper=lambda record: xml_to_navigable_dict(
+                                         etree.fromstring(
+                                             record.raw,
+                                             parser=etree.XMLParser(remove_comments=True)
+                                         )
+                                     ))
+
+    @staticmethod
+    def result_count(url, query):
+        """Return result count for the given query.
+
+        :param url: The base URL of the SRU endpoint
+        :type url: ``str``
+        :param query: The query string
+        :type query: ``str``
+        """
+        return SRUpy(url).get_records(query=query, maximumRecords=1).number_of_records
