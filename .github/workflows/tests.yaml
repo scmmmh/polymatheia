@@ -58,6 +58,10 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: '3.8'
+    
+    - name: Setup Path
+      run: |
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
     - name: Install Dependencies
       run: |
