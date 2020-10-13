@@ -28,9 +28,6 @@ jobs:
     - name: Install Dependencies
       run: |
         pip3 install tox
-#        sudo apt-get update
-#        sudo apt-get install python3-venv
-        
 
     - name: Run Tests
       run: |
