@@ -72,8 +72,5 @@ jobs:
 
     - name: Test Docs Build
       run: |
-        poetry shell
-        cd docs
-        make clean
-        make html SPHINXOPTS="-W --keep-going -n"
+        poetry run "cd docs && make clean && make html SPHINXOPTS='-W --keep-going -n'"
       
