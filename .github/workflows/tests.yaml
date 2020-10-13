@@ -49,3 +49,19 @@ jobs:
         tox -e ${{matrix.python-version}}
       env:
         EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
+  doc_tests:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install python3-venv pipx
+        pipx install poetry
+        poetry install
