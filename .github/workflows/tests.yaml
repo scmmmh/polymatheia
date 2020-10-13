@@ -67,6 +67,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install python3-venv pipx
-        pipx ensurepath
         pipx install poetry
         poetry install
+
+    - name: Test Docs Build
+      run: |
+        poetry shell
+        cd docs
+        make clean
+        make html SPHINXOPTS="-W --keep-going -n"
+      
