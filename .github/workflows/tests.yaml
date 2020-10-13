@@ -12,36 +12,25 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [py37, py38]
+        python-version: ['3.7', '3.8']
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Add Path Entries
-      run: |
-        echo "::add-path::$HOME/.local/bin"
-        echo "::add-path::$HOME/.pyenv/bin"
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
 
-    - name: Install Base Dependencies
+    - name: Setup Path
       run: |
-        sudo apt-get update
-        sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-        sudo pip3 install tox tox-pyenv
-        curl https://pyenv.run | bash
-        echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
-    - name: Install Python Version
+    - name: Install Dependencies
       run: |
-        if [ "${{matrix.python-version}}" == "py37" ]
-        then
-            pyenv install 3.7.8
-            pyenv global 3.7.8
-        fi
-        if [ "${{matrix.python-version}}" == "py38" ]
-        then
-            pyenv install 3.8.5
-            pyenv global 3.8.5
-        fi
+        pip3 install tox
+#        sudo apt-get update
+#        sudo apt-get install python3-venv
+        
 
     - name: Run Tests
       run: |
@@ -49,6 +38,7 @@ jobs:
         tox -e ${{matrix.python-version}}
       env:
         EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
+
   doc_tests:
     runs-on: ubuntu-20.04
 
