@@ -20,14 +20,14 @@ All filters support the same expression language and are designed to work with t
 
 In the first six expressions both ``param1`` and ``param2`` can be one of the following three, allowing for comparison
 of a value from a :class:`~polymatheia.data.NavigableDict` record against a constant value, two values from the same
-:class:`~polymatheia.data.NavigableDcit` record, or two constant values:
+:class:`~polymatheia.data.NavigableDict` record, or two constant values:
 
 * A constant value: The comparison is performed against this value
 * A dotted path: The comparison is performed against the value fetched from the record using the path
 * A a list: The comparison is performed against the value fetched from the record using the path in list form. This
   is needed if either the path elements contain a full-stop or square brackets or if you wish to compare against a
   value
-  at the top level of the :class:`~polymatheia.dict.NavigableDict` record.
+  at the top level of the :class:`~polymatheia.data.NavigableDict` record.
 
 For the operators ``'not'``, ``'and'``, and ``'or'`` the ``expression`` parameter is a nested expression using any of
 the given operators. The ``'not'`` operator only supports at most a single nested expression. The ``'and'`` and

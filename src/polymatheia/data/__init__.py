@@ -214,9 +214,9 @@ class NavigableDict(dict):
 class NavigableDictIterator(object):
     """The :class:`~polymatheia.data.NavigableDictIterator` maps values to :class:`~polymatheia.data.NavigableDict`.
 
-    If the iterator it wraps returns :func:`dict` objects, then these are simply converted into
+    If the iterator it wraps returns ``dict`` objects, then these are simply converted into
     :class:`~polymatheia.data.NavigableDict` objects. If a ``mapper`` function is provided, then this function is
-    called with each value and it must return a :func:`dict` object that is then converted into a
+    called with each value and it must return a ``dict`` object that is then converted into a
     :class:`~polymatheia.data.NavigableDict` object. Otherwise a :class:`~polymatheia.data.NavigableDict` is returned
     that has a single key ``value``, with the wrapped iterator value.
     """
@@ -225,7 +225,7 @@ class NavigableDictIterator(object):
         """Create a new :class:`~polymatheia.data.NavigableDictIterator`.
 
         :param it: The iterator that provides the values.
-        :param mapper: An optional mapping function converting a single iterator value into a :func:`dict` object.
+        :param mapper: An optional mapping function converting a single iterator value into a ``dict`` object.
         """
         self._it = it
         self._mapper = mapper
@@ -285,7 +285,6 @@ def xml_to_navigable_dict(node):
     ``_text`` key and any text that directly follows the ``node`` is available via the ``_tail`` key.
 
     :param node: The XML node to convert
-    :type node: :class:`~lxml.etree.Element`
     :return: The dictionary representation of the XML node
     :rtype: :class:`~polymatheia.data.NavigableDict`
     """
