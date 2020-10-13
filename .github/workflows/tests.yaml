@@ -63,5 +63,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install python3-venv pipx
+        pipx ensurepath
         pipx install poetry
         poetry install
