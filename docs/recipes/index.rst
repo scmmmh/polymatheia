@@ -5,6 +5,7 @@ Recipes
 
    oai-pmh
    europeana
+   sru
    json
    xml
    csv
