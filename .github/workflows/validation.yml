@@ -16,6 +16,7 @@ jobs:
     - name: Setup Path
       run: |
         echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
 
     - name: Install Base Dependencies
       run: |
