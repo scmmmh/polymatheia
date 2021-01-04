@@ -13,16 +13,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup Path
+    - name: Add .local path
       run: |
-        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-        
+        echo "::add-path::$HOME/.local/bin"
+
     - name: Install Base Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install python3-venv pipx
         pipx install poetry
-    
+
     - name: Install Python Dependencies
       run: |
         poetry install
