@@ -12,9 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Add .local path
+    - name: Setup Path
       run: |
-        echo "::add-path::$HOME/.local/bin"
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
     - name: Install Base Dependencies
       run: |
