@@ -135,10 +135,12 @@ def test_reusability_query():
 
 def test_cursor_search():
     """Test that the cursor search allows us to go past 1000 records."""
-    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Gutzkow OR Zäunemann OR Heyse')
+    reader = EuropeanaSearchReader(os.environ['EUROPEANA_API_KEY'], 'Gutzkow OR Zäunemann OR Heyse OR Haydn')
     count = 0
     for _ in reader:
         count = count + 1
+        if count > 1010:
+            break
     assert count > 1000
 
 
