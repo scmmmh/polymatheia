@@ -47,9 +47,10 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Add .local path
+    - name: Setup Path
       run: |
-        echo "::add-path::$HOME/.local/bin"
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
 
     - name: Install Dependencies
       run: |
