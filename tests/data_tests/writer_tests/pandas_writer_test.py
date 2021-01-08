@@ -16,7 +16,8 @@ def test_create_dataframe_from_transform():
     ])
     writer = PandasDFWriter()
     df = writer.write(transform)
-    assert df.columns.all(['id', 'set', 'title'])
+    for col_name in ['id', 'set', 'title']:
+        assert col_name in df.columns
     assert df.shape == (10, 3)
     assert df.dtypes[0] == np.dtype('O')
     assert df.dtypes[1] == np.dtype('O')
@@ -28,7 +29,8 @@ def test_create_dataframe_from_csv():
     reader = CSVReader('tests/fixtures/csv_reader_test/example_csv.csv')
     writer = PandasDFWriter()
     df = writer.write(reader)
-    assert df.columns.all(['id', 'set', 'title', 'length'])
+    for col_name in ['id', 'set', 'title']:
+        assert col_name in df.columns
     assert df.shape == (10, 4)
     assert df.dtypes[0] == np.dtype('O')
     assert df.dtypes[1] == np.dtype('O')
