@@ -32,7 +32,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        echo "${{ secrets.EUROPEANA_API_KEY }}"
+        echo "$EUROPEANA_API_KEY"
         mkdir tmp
         tox -e ${{matrix.python-version}}
       env:
