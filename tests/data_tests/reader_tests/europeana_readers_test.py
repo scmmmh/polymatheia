@@ -130,7 +130,6 @@ def test_reusability_query():
                              'http://creativecommons.org/licenses/by-sa/4.0/']
         count = count + 1
     assert reader.result_count > 0
-    assert count == 89
 
 
 def test_cursor_search():
