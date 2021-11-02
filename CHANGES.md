@@ -1,5 +1,9 @@
 # Polymatheia
 
+## Dev
+
+* **Bugfix**: Updated dev dependencies
+
 ## 0.3.1
 
 * **Bugfix**: Updated dependencies to fix various vulnerabilities
