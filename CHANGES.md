@@ -1,6 +1,6 @@
 # Polymatheia
 
-## Dev
+## 0.3.2
 
 * **Bugfix**: Updated dev dependencies
 
