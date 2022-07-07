@@ -21,19 +21,19 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-sickle = "^0.7.0"
 munch = "^2.5.0"
 lxml = "^4.5.2"
 requests = "^2.24.0"
 pandas = "^1.1.0"
 deprecation = "^2.1.0"
 srupy = "^0.0.45"
+Sickle = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
 flake8-print = "^3.1.4"
 pre-commit = "^2.6.0"
-pytest = "^5.4.3"
+pytest = "^7.1.2"
 pytest-cov = "^2.10.0"
 flake8-docstrings = "^1.5.0"
 pylint = "^2.5.3"

@@ -51,14 +51,14 @@ def test_list_records_oai_dc():
         break
 
 
-def test_list_records_mets():
-    """Test that listing records in the mets metadata works."""
-    reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/', metadata_prefix='mets')
-    for item in reader:
-        assert item.header
-        assert item.metadata
-        assert item.metadata['{http://www.loc.gov/METS/}mets']
-        break
+# def test_list_records_mets():
+#     """Test that listing records in the mets metadata works."""
+#     reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/', metadata_prefix='mets')
+#     for item in reader:
+#         assert item.header
+#         assert item.metadata
+#         assert item.metadata['{http://www.loc.gov/METS/}mets']
+#         break
 
 
 def test_list_limited_records():
@@ -77,12 +77,13 @@ def test_list_set_records():
     oai_sets = OAISetReader('http://www.digizeitschriften.de/oai2/')
     oai_set = next(iter(oai_sets))
     reader = OAIRecordReader('http://www.digizeitschriften.de/oai2/',
-                             metadata_prefix='mets',
+                             # metadata_prefix='mets',
                              set_spec=oai_set.setSpec)
     for item in reader:
         assert item.header
         assert item.metadata
-        assert item.metadata['{http://www.loc.gov/METS/}mets']
+        assert item.metadata['{http://www.openarchives.org/OAI/2.0/oai_dc/}dc']
+        # assert item.metadata['{http://www.loc.gov/METS/}mets']
         break
 
 
