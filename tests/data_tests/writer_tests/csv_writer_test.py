@@ -5,14 +5,14 @@ from csv import DictReader
 from io import StringIO
 from shutil import rmtree
 
-from polymatheia.data.reader import LocalReader
+from polymatheia.data.reader import JSONReader
 from polymatheia.data.writer import CSVWriter
 from polymatheia.transform import RecordsTransform
 
 
 def test_csv_file_writing():
     """Test writing records to a local filename."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),
@@ -34,7 +34,7 @@ def test_csv_file_writing():
 
 def test_csv_in_memory_writing():
     """Test that writing records to an existing file-like object works."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),

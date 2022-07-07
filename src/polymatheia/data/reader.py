@@ -6,13 +6,11 @@ import json
 import os
 
 from csv import DictReader
-from deprecation import deprecated
 from lxml import etree
 from requests import get
 from sickle import Sickle
 from srupy import SRUpy
 
-from polymatheia import __version__
 from polymatheia.data import NavigableDict, NavigableDictIterator, LimitingIterator, xml_to_navigable_dict
 
 
@@ -132,14 +130,6 @@ class JSONReader():
         """Return the next file as a :class:`~polymatheia.data.NavigableDict`."""
         with open(filename) as in_f:
             return json.load(in_f)
-
-
-@deprecated(deprecated_in='0.2.0', removed_in='1.0.0', current_version=__version__,
-            details='Replaced by the polymatheia.data.reader.JSONReader')
-class LocalReader(JSONReader):
-    """Deprecated. Use :class:`~polymatheia.data.reader.JSONReader`."""
-
-    pass
 
 
 class XMLReader():

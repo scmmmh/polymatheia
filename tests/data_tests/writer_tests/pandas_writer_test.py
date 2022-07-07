@@ -1,14 +1,14 @@
 """Tests for the :class:`~polymatheia.data.writer.PandasDFWriter`."""
 import numpy as np
 
-from polymatheia.data.reader import LocalReader, CSVReader
+from polymatheia.data.reader import JSONReader, CSVReader
 from polymatheia.data.writer import PandasDFWriter
 from polymatheia.transform import RecordsTransform
 
 
 def test_create_dataframe_from_transform():
     """Tests that a Pandas dataframe can be created from an iterator."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),

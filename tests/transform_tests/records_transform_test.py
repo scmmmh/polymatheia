@@ -1,11 +1,11 @@
 """Tests for the :class:`~polymatheia.transform.RecordsTransform`."""
-from polymatheia.data.reader import LocalReader
+from polymatheia.data.reader import JSONReader
 from polymatheia.transform import RecordsTransform
 
 
 def test_apply_iterator_transform():
     """Test that the iteration transform works."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),
@@ -22,7 +22,7 @@ def test_apply_iterator_transform():
 
 def test_repeat_apply_iterator_transform():
     """Test that the repeat iteration transform works."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),
@@ -33,7 +33,7 @@ def test_repeat_apply_iterator_transform():
 
 def test_iterator():
     """Test that the repeat iteration transform works."""
-    reader = LocalReader('tests/fixtures/local_reader_test')
+    reader = JSONReader('tests/fixtures/local_reader_test')
     transform = RecordsTransform(reader, [
         ('copy', 'id', 'header.identifier._text'),
         ('copy', 'set', 'header.setSpec._text'),
