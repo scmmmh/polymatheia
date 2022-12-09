@@ -1,6 +1,6 @@
 # Polymatheia
 
-## Dev
+## 1.0.2
 
 * **Bugfix**: Fix a security issue in the certifi dependency
 
