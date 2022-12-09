@@ -1,5 +1,17 @@
 # Polymatheia
 
+## Dev
+
+* **Bugfix**: Fix a security issue in the certifi dependency
+
+## 1.0.1
+
+* **Update**: Remove deprecated classes that should have been removed in 1.0.0
+
+## 1.0.0
+
+* **New**: 1.0 release
+
 ## 0.3.2
 
 * **Bugfix**: Updated dev dependencies
