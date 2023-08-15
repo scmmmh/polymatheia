@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ default ]
+    branches: [default]
   pull_request:
-    branches: [ default ]
+    branches: [default]
 
 jobs:
   tests:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         include:
           - python-version: 3.8
             tox-env: py38
@@ -20,54 +20,56 @@ jobs:
             tox-env: py39
           - python-version: 3.10
             tox-env: py310
+          - python-version: 3.11
+            tox-env: py311
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Setup Path
-      run: |
-        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-        echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
+      - name: Setup Path
+        run: |
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
 
-    - name: Install Dependencies
-      run: |
-        pip3 install tox
+      - name: Install Dependencies
+        run: |
+          pip3 install tox
 
-    - name: Run Tests
-      run: |
-        mkdir tmp
-        tox -e ${{matrix.tox-env}}
-      env:
-        EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
+      - name: Run Tests
+        run: |
+          mkdir tmp
+          tox -e ${{matrix.tox-env}}
+        env:
+          EUROPEANA_API_KEY: ${{ secrets.EUROPEANA_API_KEY }}
 
   doc_tests:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
-    - name: Setup Path
-      run: |
-        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-        echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
+      - name: Setup Path
+        run: |
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
 
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install python3-venv pipx
-        pipx install poetry
-        poetry install
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-venv pipx
+          pipx install poetry
+          poetry install
 
-    - name: Test Docs Build
-      run: |
-        cd docs
-        poetry run make clean
-        poetry run make html SPHINXOPTS="-W --keep-going -n"
+      - name: Test Docs Build
+        run: |
+          cd docs
+          poetry run make clean
+          poetry run make html SPHINXOPTS="-W --keep-going -n"
