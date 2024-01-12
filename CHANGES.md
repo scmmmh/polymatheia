@@ -1,10 +1,10 @@
 # Polymatheia
 
-## **Dev**
+## 1.0.6
 
 * **Bugfix**: Fix security issue in a dependency
 
-## **1.0.5**
+## 1.0.5
 
 * **Update**: Updated dependencies
 
