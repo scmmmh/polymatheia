@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "polymatheia"
-version = "1.0.6"
+version = "1.0.7"
 description = "A python library to support digital archive metadata use"
 authors = ["Mark Hall <mark.hall@work.room3b.eu>"]
 license = "MIT"
