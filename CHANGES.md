@@ -1,5 +1,13 @@
 # Polymatheia
 
+## **Dev**
+
+* **Bugfix**: Fix security issue in a dependency
+
+## **1.0.5**
+
+* **Update**: Updated dependencies
+
 ## 1.0.4
 
 * **Bugfix**: Fix security issues in a number of dependencies
