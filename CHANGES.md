@@ -1,5 +1,9 @@
 # Polymatheia
 
+## 1.0.8
+
+* **Bugfix**: Fix security issue in a dependency
+
 ## 1.0.7
 
 * **Bugfix**: Fix missing dependency updates
