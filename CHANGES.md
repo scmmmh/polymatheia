@@ -1,5 +1,9 @@
 # Polymatheia
 
+## Dev
+
+* **Breaking**: Update minimum python version to 3.11
+
 ## 1.0.8
 
 * **Bugfix**: Fix security issue in a dependency
