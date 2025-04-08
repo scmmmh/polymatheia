@@ -21,26 +21,26 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-munch = "^2.5.0"
+munch = "^4.0.0"
 lxml = "^4.5.2"
-requests = "^2.24.0"
-pandas = "^1.1.0"
+requests = "^2.32.3"
+pandas = "^2.2.3"
 deprecation = "^2.1.0"
-srupy = "^0.0.45"
+srupy = "^0.1.1"
 Sickle = "^0.7.0"
 
-[tool.poetry.dev-dependencies]
-flake8 = "^3.8.3"
-flake8-print = "^3.1.4"
-pre-commit = "^2.6.0"
-pytest = "^7.1.2"
-pytest-cov = "^2.10.0"
-flake8-docstrings = "^1.5.0"
-pylint = "^2.5.3"
-tox = "^3.18.0"
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.2.0"
+flake8-print = "^5.0.0"
+pre-commit = "^4.2.0"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+flake8-docstrings = "^1.7.0"
+pylint = "^3.3.6"
+tox = "^4.25.0"
 tox-pyenv = "^1.1.0"
-Sphinx = "^5.0.2"
-sphinx-rtd-theme = "^1.0.0"
+sphinx = "^8.2.3"
+sphinx-rtd-theme = "^3.0.2"
 
 [build-system]
 requires = ["poetry>=0.12"]
