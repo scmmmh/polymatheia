@@ -1,3 +1,5 @@
+**Important!** This library is in an extended end-of-life phase. Some of its dependencies are not compatible with Python 3.13, so it is being phased out.
+
 # Polymatheia
 
 ![Validation Status](https://github.com/scmmmh/polymatheia/workflows/Validation/badge.svg) ![Build Status](https://github.com/scmmmh/polymatheia/workflows/Tests/badge.svg) [![Documentation Status](https://readthedocs.org/projects/polymatheia/badge/?version=latest)](https://polymatheia.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/polymatheia.svg)](https://badge.fury.io/py/polymatheia)
