@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 munch = "^4.0.0"
 lxml = "^4.5.2"
 requests = "^2.32.3"
