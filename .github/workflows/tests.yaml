@@ -17,9 +17,9 @@ jobs:
           - python-version: 3.11
             tox-env: py311
           - python-version: 3.12
-            tox-env: py311
+            tox-env: py312
           - python-version: 3.13
-            tox-env: py311
+            tox-env: py313
 
     steps:
       - uses: actions/checkout@v2
@@ -35,6 +35,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-dev libxslt1-dev
           pip3 install tox
 
       - name: Run Tests
